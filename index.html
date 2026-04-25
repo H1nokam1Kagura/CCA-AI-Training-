@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCA Exam Prep — Podcast Series</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #0c0f14;
+    --surface:  #141820;
+    --surface2: #1c2230;
+    --border:   #252d3d;
+    --border2:  #2e3850;
+    --text:     #e8edf5;
+    --muted:    #7a8599;
+    --faint:    #3a4560;
+    --accent:   #00c896;
+    --accent2:  #0090ff;
+    --warn:     #f59e0b;
+    --danger:   #f26b50;
+    --mono:     'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+    --sans:     'Inter', 'Segoe UI', system-ui, sans-serif;
+    --radius:   10px;
+    --bar-h:    3px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* Layout */
+  .shell {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    grid-template-rows: 56px 1fr 96px;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* Top bar */
+  .topbar {
+    grid-column: 1 / -1;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    gap: 16px;
+  }
+  .topbar-logo {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+  .topbar-title {
+    font-size: 13px;
+    color: var(--muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .topbar-stats {
+    margin-left: auto;
+    display: flex;
+    gap: 20px;
+    flex-shrink: 0;
+  }
+  .stat {
+    text-align: right;
+  }
+  .stat-val {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .stat-lbl {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border2) transparent;
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+  .sidebar-header {
+    padding: 14px 16px 10px;
+    font-size: 10px;
+    font-family: var(--mono);
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    z-index: 1;
+  }
+
+  .ep-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+    position: relative;
+  }
+  .ep-item:hover { background: var(--surface2); }
+  .ep-item.active {
+    background: var(--surface2);
+  }
+  .ep-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--accent);
+    border-radius: 0 2px 2px 0;
+  }
+
+  .ep-num {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--faint);
+    width: 22px;
+    flex-shrink: 0;
+    text-align: center;
+  }
+  .ep-item.active .ep-num,
+  .ep-item.played .ep-num { color: var(--accent); }
+
+  .ep-info { flex: 1; min-width: 0; }
+  .ep-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+  }
+  .ep-item.played .ep-name { color: var(--muted); }
+  .ep-meta {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tag {
+    font-size: 9px;
+    padding: 1px 6px;
+    border-radius: 20px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  .check-icon {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 8px;
+    color: #000;
+  }
+  .ep-item:not(.played) .check-icon { display: none; }
+
+  /* Main content */
+  .main {
+    background: var(--bg);
+    overflow-y: auto;
+    padding: 32px 36px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border2) transparent;
+  }
+  .main::-webkit-scrollbar { width: 4px; }
+  .main::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+  .now-playing-tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .ep-big-num {
+    font-family: var(--mono);
+    font-size: 64px;
+    font-weight: 700;
+    color: var(--border2);
+    line-height: 1;
+    margin-bottom: 4px;
+    letter-spacing: -2px;
+  }
+
+  .ep-big-title {
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.25;
+    margin-bottom: 16px;
+    letter-spacing: -0.3px;
+  }
+
+  .ep-tag-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .ep-duration-badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .concepts-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 24px;
+  }
+  .concepts-label {
+    font-size: 10px;
+    font-family: var(--mono);
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+  }
+  .concept-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .chip {
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3px 10px;
+  }
+
+  .nav-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 28px;
+  }
+  .nav-btn {
+    flex: 1;
+    padding: 10px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--muted);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+  .nav-btn:hover { border-color: var(--border2); color: var(--text); background: var(--surface2); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+  .nav-btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #000;
+    font-weight: 600;
+  }
+  .nav-btn.primary:hover { background: #00e5ac; }
+
+  /* Bottom player */
+  .player {
+    grid-column: 1 / -1;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 0 24px;
+    gap: 0;
+  }
+
+  .progress-area {
+    padding: 12px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .time-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    width: 38px;
+    flex-shrink: 0;
+    text-align: right;
+  }
+  .time-label.right { text-align: left; }
+  .progress-bar {
+    flex: 1;
+    height: var(--bar-h);
+    background: var(--border2);
+    border-radius: 2px;
+    cursor: pointer;
+    position: relative;
+    overflow: visible;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    pointer-events: none;
+    position: relative;
+  }
+  .progress-fill::after {
+    content: '';
+    position: absolute;
+    right: -5px;
+    top: -4px;
+    width: 11px;
+    height: 11px;
+    background: var(--accent);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .progress-bar:hover .progress-fill::after { opacity: 1; }
+
+  .controls-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0 12px;
+  }
+  .ctrl-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 6px;
+    transition: color 0.1s, background 0.1s;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    line-height: 1;
+  }
+  .ctrl-btn:hover { color: var(--text); background: var(--surface2); }
+  .ctrl-btn.play-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #000;
+    font-size: 14px;
+  }
+  .ctrl-btn.play-btn:hover { background: #00e5ac; }
+  .ctrl-btn.active { color: var(--accent); }
+
+  .player-ep-name {
+    flex: 1;
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0 12px;
+  }
+  .player-ep-name strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .volume-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .vol-icon { font-size: 12px; color: var(--muted); }
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 80px;
+    height: var(--bar-h);
+    background: var(--border2);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+  }
+  .speed-btn {
+    font-family: var(--mono);
+    font-size: 11px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 3px 8px;
+    transition: all 0.1s;
+  }
+  .speed-btn:hover { color: var(--text); border-color: var(--border2); }
+
+  .kbd-hint {
+    position: fixed;
+    bottom: 104px;
+    right: 20px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    font-size: 11px;
+    color: var(--muted);
+    display: none;
+    z-index: 100;
+    line-height: 1.8;
+  }
+  .kbd-hint.show { display: block; }
+  kbd {
+    font-family: var(--mono);
+    font-size: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+    padding: 1px 5px;
+    margin-right: 4px;
+    color: var(--text);
+  }
+
+  svg { display: block; }
+
+  @media (max-width: 680px) {
+    .shell { grid-template-columns: 1fr; grid-template-rows: 56px 1fr 96px; }
+    .sidebar { display: none; }
+    .ep-big-num { font-size: 40px; }
+    .ep-big-title { font-size: 20px; }
+    .main { padding: 20px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="topbar-logo">CCA Podcast</div>
+    <div class="topbar-title" id="topbar-title">Select an episode to begin</div>
+    <div class="topbar-stats">
+      <div class="stat">
+        <div class="stat-val" id="stat-played">0</div>
+        <div class="stat-lbl">Played</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val">16</div>
+        <div class="stat-lbl">Episodes</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">Episodes</div>
+    <div id="ep-list"></div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main" id="main-panel">
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;color:var(--muted);">
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+        <circle cx="24" cy="24" r="22" stroke="var(--border2)" stroke-width="2"/>
+        <path d="M19 16v16l14-8-14-8z" fill="var(--faint)"/>
+      </svg>
+      <div style="font-size:13px;">Select an episode from the sidebar</div>
+      <div style="font-size:11px;color:var(--faint);">16 episodes · CCA Exam Prep Series</div>
+    </div>
+  </main>
+
+  <!-- Player -->
+  <footer class="player">
+    <div class="progress-area">
+      <span class="time-label" id="time-cur">0:00</span>
+      <div class="progress-bar" id="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+      <span class="time-label right" id="time-dur">0:00</span>
+    </div>
+    <div class="controls-row">
+      <button class="ctrl-btn" id="btn-prev" onclick="prevEp()" title="Previous">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M3 3h1.5v10H3V3zm10 0L6.5 8 13 13V3z"/></svg>
+      </button>
+      <button class="ctrl-btn" onclick="skip(-15)" title="Back 15s" style="font-family:var(--mono);font-size:10px;color:var(--muted);gap:2px">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 2a6 6 0 100 12A6 6 0 008 2zM6 6l-2-2 1-1 3 3-3 3-1-1 2-2zm4 3H8V7h2v2z"/></svg>
+        15
+      </button>
+      <button class="ctrl-btn play-btn" id="btn-play" onclick="togglePlay()" title="Play / Pause (Space)">
+        <svg id="play-icon" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M3 2l10 5-10 5V2z"/></svg>
+      </button>
+      <button class="ctrl-btn" onclick="skip(30)" title="Forward 30s" style="font-family:var(--mono);font-size:10px;color:var(--muted);gap:2px">
+        30
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 2a6 6 0 100 12A6 6 0 008 2zM6 9V7h2V5l2 2-2 2zm3-1l1-1-1-1v2z"/></svg>
+      </button>
+      <button class="ctrl-btn" id="btn-next" onclick="nextEp()" title="Next">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M11.5 3H13v10h-1.5V3zM3 3l6.5 5L3 13V3z"/></svg>
+      </button>
+
+      <div class="player-ep-name" id="player-ep-name">—</div>
+
+      <button class="speed-btn" id="speed-btn" onclick="cycleSpeed()" title="Playback speed">1×</button>
+
+      <div class="volume-row">
+        <span class="vol-icon">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M2 5h2l3-3v10L4 9H2V5zm9.5 2a3.5 3.5 0 00-2.5-3.35v6.7A3.5 3.5 0 0011.5 7zm-2.5-5.2A5.5 5.5 0 0113.5 7a5.5 5.5 0 01-4.5 5.2V1.8z"/></svg>
+        </span>
+        <input type="range" id="vol" min="0" max="1" step="0.05" value="1" oninput="setVol(this.value)">
+      </div>
+
+      <button class="ctrl-btn" onclick="toggleKbd()" title="Keyboard shortcuts" style="font-size:11px;font-family:var(--mono);color:var(--faint)">?</button>
+    </div>
+  </footer>
+
+</div>
+
+<!-- Keyboard shortcuts overlay -->
+<div class="kbd-hint" id="kbd-hint">
+  <div><kbd>Space</kbd> Play / Pause</div>
+  <div><kbd>←</kbd><kbd>→</kbd> Seek 5s</div>
+  <div><kbd>↑</kbd><kbd>↓</kbd> Prev / Next episode</div>
+  <div><kbd>J</kbd><kbd>L</kbd> Skip −15s / +30s</div>
+  <div><kbd>S</kbd> Cycle speed</div>
+  <div><kbd>?</kbd> Toggle this panel</div>
+</div>
+
+<audio id="audio"></audio>
+
+<script>
+const SPEEDS = [1, 1.25, 1.5, 1.75, 2];
+let speedIdx = 0;
+let currentEp = null;
+let played = JSON.parse(localStorage.getItem('cca-played') || '{}');
+
+const EPISODES = [
+  { num: 1,  file: "Lesson_01_Why_People_Fail_the_CCA_Exam.mp3",              title: "Why People Fail the CCA Exam",                    duration: "~8 min",  tag: "Foundations",       tagColor: "#0369a1", tagBg: "#e0f2fe",
+    concepts: ["11 failure modes taxonomy","stochastic vs deterministic behavior","prompting as advisory not enforcement","RAG as coupled error propagation","safety embedded not post-processing","eval strategy requirements"] },
+  { num: 2,  file: "Lesson_02_Agentic_Error_Handling.mp3",                    title: "Agentic Error Handling",                          duration: "~9 min",  tag: "Error Control",     tagColor: "#b91c1c", tagBg: "#fee2e2",
+    concepts: ["error type taxonomy","detection vs recovery separation","structured retry strategies","fallback mode hierarchy","state isolation","control flow vs model reasoning"] },
+  { num: 3,  file: "Lesson_03_Two_Critical_Failure_Modes.mp3",                title: "Two Critical Failure Modes",                      duration: "~10 min", tag: "Error Control",     tagColor: "#b91c1c", tagBg: "#fee2e2",
+    concepts: ["tool selection failures","argument construction failures","schema validation as pre-execution gate","retry controller outside model","404 vs true absence","MCP server down handling"] },
+  { num: 4,  file: "Lesson_04_MCP_Manifest_and_RPC_Enforcement.mp3",          title: "MCP Manifest & RPC Enforcement",                  duration: "~9 min",  tag: "MCP Layer",         tagColor: "#92400e", tagBg: "#fef3c7",
+    concepts: ["manifest as contract","RPC as controlled execution","status semantics: NOT_FOUND vs UNAVAILABLE vs TIMEOUT","model proposes — manifest constrains — RPC enforces","compiler boundary analogy"] },
+  { num: 5,  file: "Lesson_05_Claude_MD_as_a_Control_Layer.mp3",                title: "Claude.md as Control Layer",                      duration: "~9 min",  tag: "Policy Layer",      tagColor: "#065f46", tagBg: "#d1fae5",
+    concepts: ["Claude.md as policy not prompt","epistemic rules","decision rules","output structure enforcement","enforces interpretation not execution","traceability via structure"] },
+  { num: 6,  file: "Lesson_06_Claude_MD_and_Skill_MD_Policy_vs_Behavior.mp3", title: "Claude.md vs Skill.md — Policy vs Behavior",       duration: "~10 min", tag: "Policy Layer",      tagColor: "#065f46", tagBg: "#d1fae5",
+    concepts: ["cognitive vs procedural separation","invariant vs task-specific rules","retry in Skill.md not Claude.md","constitution vs playbook analogy","three-layer removal failure modes"] },
+  { num: 7,  file: "Lesson_07_Hub_and_Spoke_Agent_Architecture.mp3",          title: "Hub-and-Spoke Architecture",                      duration: "~10 min", tag: "Architecture",      tagColor: "#3730a3", tagBg: "#ede9fe",
+    concepts: ["hub as planner not executor","all communication through hub","hub Skill.md routing logic","cascading failure prevention","hub validates every spoke result"] },
+  { num: 8,  file: "Lesson_08_Multi_Agent_Failure_Modes.mp3",                 title: "Multi-Agent Failure Modes",                       duration: "~10 min", tag: "Architecture",      tagColor: "#3730a3", tagBg: "#ede9fe",
+    concepts: ["divergent reasoning","redundant execution","conflicting outputs","error amplification","unbounded loops","state contamination","spoke specification as contract"] },
+  { num: 9,  file: "Lesson_09_Goal_Decomposition_in_the_Hub.mp3",             title: "Goal Decomposition in the Hub",                   duration: "~9 min",  tag: "Architecture",      tagColor: "#3730a3", tagBg: "#ede9fe",
+    concepts: ["goal classification","task segmentation rules","dependency mapping","agent assignment logic","validation checkpoints","termination criteria","single responsible agent per step"] },
+  { num: 10, file: "Lesson_10_Memory_Caching_and_State_Management.mp3",       title: "Memory, Caching & State",                         duration: "~10 min", tag: "State Mgmt",        tagColor: "#7c2d12", tagBg: "#ffedd5",
+    concepts: ["memory vs cache vs state","safe vs unsafe caching","state contamination causes","structured logging","recovery: retry vs fallback vs escalation","validated-data-only memory"] },
+  { num: 11, file: "Lesson_11_Managing_the_Context_Window.mp3",               title: "Managing the Context Window",                     duration: "~10 min", tag: "Context Design",    tagColor: "#1e3a8a", tagBg: "#dbeafe",
+    concepts: ["context as computation surface","retrieval → compression → selection","attention dilution","context budget enforcement","hub as curator","over-compression vs overloading"] },
+  { num: 12, file: "Lesson_12_Determinism_Without_Schema.mp3",                title: "Determinism Without Schema",                      duration: "~9 min",  tag: "Unstructured",      tagColor: "#713f12", tagBg: "#fef9c3",
+    concepts: ["intermediate structure as determinism","semantic contracts","multi-pass validation","confidence scoring","cross-agent agreement","traceable transformations","bounded variation"] },
+  { num: 13, file: "Lesson_13_From_Text_to_Structure_Defining_Elements.mp3",  title: "Defining Elements in Unstructured Data",          duration: "~9 min",  tag: "Unstructured",      tagColor: "#713f12", tagBg: "#fef9c3",
+    concepts: ["element as semantic requirement","Skill.md defines elements not model","presence enforcement before accuracy","minimal sufficient element design","risk = cause + impact minimum"] },
+  { num: 14, file: "Lesson_14_Predicting_Goals_and_Defining_Elements.mp3",    title: "Predicting Goals & Defining Elements",            duration: "~9 min",  tag: "Unstructured",      tagColor: "#713f12", tagBg: "#fef9c3",
+    concepts: ["goal class taxonomy","goal-to-element mapping","element templates in Skill.md","goal classification step","ambiguous goal handling","wrong classification failure mode"] },
+  { num: 15, file: "Lesson_15_Designing_Task_Schemas.mp3",                    title: "Designing Task Schemas",                          duration: "~8 min",  tag: "Unstructured",      tagColor: "#713f12", tagBg: "#fef9c3",
+    concepts: ["what must be true for output to be useful","minimal schema design","validation as schema purpose","actionable not available information","over-specifying schema failure mode"] },
+  { num: 16, file: "Lesson_16_Validating_Unstructured_Outputs.mp3",           title: "Validating Unstructured Outputs",                 duration: "~10 min", tag: "Validation",        tagColor: "#14532d", tagBg: "#dcfce7",
+    concepts: ["presence vs accuracy","five-layer validation funnel","structural / semantic / grounded truth","consistency check layer","cross-pass validation","managing disagreement vs forcing truth"] },
+];
+
+const audio = document.getElementById('audio');
+const playIcon = document.getElementById('play-icon');
+
+// Build sidebar
+const list = document.getElementById('ep-list');
+EPISODES.forEach(ep => {
+  const div = document.createElement('div');
+  div.className = 'ep-item' + (played[ep.num] ? ' played' : '');
+  div.id = 'ep-' + ep.num;
+  div.innerHTML = `
+    <div class="ep-num">${String(ep.num).padStart(2,'0')}</div>
+    <div class="ep-info">
+      <div class="ep-name">${ep.title}</div>
+      <div class="ep-meta">
+        <span class="tag" style="background:${ep.tagBg};color:${ep.tagColor}">${ep.tag}</span>
+        <span>${ep.duration}</span>
+      </div>
+    </div>
+    <div class="check-icon">✓</div>`;
+  div.onclick = () => loadEp(ep);
+  list.appendChild(div);
+});
+
+function loadEp(ep) {
+  currentEp = ep;
+  document.querySelectorAll('.ep-item').forEach(el => el.classList.remove('active'));
+  const item = document.getElementById('ep-' + ep.num);
+  if (item) { item.classList.add('active'); item.scrollIntoView({ block: 'nearest' }); }
+
+  audio.src = ep.file;
+  audio.playbackRate = SPEEDS[speedIdx];
+  audio.play().catch(() => {});
+
+  document.getElementById('topbar-title').textContent = 'EP ' + String(ep.num).padStart(2,'0') + ' — ' + ep.title;
+  document.getElementById('player-ep-name').innerHTML = `<strong>EP ${String(ep.num).padStart(2,'0')}</strong> — ${ep.title}`;
+
+  // Main panel
+  const tagHTML = `<span class="tag" style="background:${ep.tagBg};color:${ep.tagColor};font-size:11px;padding:3px 10px">${ep.tag}</span>`;
+  const chipsHTML = ep.concepts.map(c => `<span class="chip">${c}</span>`).join('');
+  const prevDis = ep.num === 1 ? 'disabled' : '';
+  const nextDis = ep.num === 16 ? 'disabled' : '';
+
+  document.getElementById('main-panel').innerHTML = `
+    <div class="now-playing-tag">▶ Now playing</div>
+    <div class="ep-big-num">${String(ep.num).padStart(2,'0')}</div>
+    <div class="ep-big-title">${ep.title}</div>
+    <div class="ep-tag-row">
+      ${tagHTML}
+      <span class="ep-duration-badge">${ep.duration}</span>
+    </div>
+    <div class="concepts-block">
+      <div class="concepts-label">Key concepts</div>
+      <div class="concept-chips">${chipsHTML}</div>
+    </div>
+    <div class="nav-row">
+      <button class="nav-btn" onclick="prevEp()" ${prevDis}>← Previous</button>
+      <button class="nav-btn primary" onclick="togglePlay()">Play / Pause</button>
+      <button class="nav-btn" onclick="nextEp()" ${nextDis}>Next →</button>
+    </div>`;
+}
+
+function togglePlay() {
+  if (!currentEp) { loadEp(EPISODES[0]); return; }
+  if (audio.paused) audio.play(); else audio.pause();
+}
+
+function setPlayIcon() {
+  const paused = audio.paused;
+  playIcon.innerHTML = paused
+    ? '<path d="M3 2l10 5-10 5V2z"/>'
+    : '<path d="M3 2h3v10H3V2zm7 0h3v10h-3V2z"/>';
+}
+audio.addEventListener('play', setPlayIcon);
+audio.addEventListener('pause', setPlayIcon);
+
+function skip(sec) { audio.currentTime = Math.max(0, audio.currentTime + sec); }
+
+function prevEp() {
+  if (!currentEp || currentEp.num === 1) return;
+  loadEp(EPISODES[currentEp.num - 2]);
+}
+function nextEp() {
+  if (!currentEp || currentEp.num === 16) return;
+  loadEp(EPISODES[currentEp.num]);
+}
+
+audio.addEventListener('ended', () => {
+  markPlayed(currentEp);
+  if (currentEp && currentEp.num < 16) nextEp();
+});
+
+function markPlayed(ep) {
+  if (!ep) return;
+  played[ep.num] = true;
+  localStorage.setItem('cca-played', JSON.stringify(played));
+  const item = document.getElementById('ep-' + ep.num);
+  if (item) item.classList.add('played');
+  document.getElementById('stat-played').textContent = Object.keys(played).length;
+}
+
+// Progress bar
+audio.addEventListener('timeupdate', () => {
+  if (!audio.duration) return;
+  const pct = (audio.currentTime / audio.duration) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('time-cur').textContent = fmt(audio.currentTime);
+  document.getElementById('time-dur').textContent = fmt(audio.duration);
+  if (audio.currentTime > 30) markPlayed(currentEp);
+});
+
+document.getElementById('progress-bar').addEventListener('click', e => {
+  const rect = e.currentTarget.getBoundingClientRect();
+  const pct = (e.clientX - rect.left) / rect.width;
+  audio.currentTime = pct * audio.duration;
+});
+
+function fmt(s) {
+  s = Math.floor(s || 0);
+  const m = Math.floor(s / 60), sec = s % 60;
+  return m + ':' + String(sec).padStart(2,'0');
+}
+
+function setVol(v) { audio.volume = v; }
+
+function cycleSpeed() {
+  speedIdx = (speedIdx + 1) % SPEEDS.length;
+  audio.playbackRate = SPEEDS[speedIdx];
+  document.getElementById('speed-btn').textContent = SPEEDS[speedIdx] + '×';
+}
+
+function toggleKbd() {
+  document.getElementById('kbd-hint').classList.toggle('show');
+}
+
+// Init played count
+document.getElementById('stat-played').textContent = Object.keys(played).length;
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  switch(e.key) {
+    case ' ':    e.preventDefault(); togglePlay(); break;
+    case 'ArrowLeft':  e.preventDefault(); skip(-5); break;
+    case 'ArrowRight': e.preventDefault(); skip(5); break;
+    case 'ArrowUp':    e.preventDefault(); prevEp(); break;
+    case 'ArrowDown':  e.preventDefault(); nextEp(); break;
+    case 'j': case 'J': skip(-15); break;
+    case 'l': case 'L': skip(30);  break;
+    case 's': case 'S': cycleSpeed(); break;
+    case '?':  toggleKbd(); break;
+  }
+});
+
+// Auto-load first on first visit
+if (!currentEp && Object.keys(played).length === 0) {
+  setTimeout(() => {}, 0); // stays on welcome screen until clicked
+}
+</script>
+</body>
+</html>
