@@ -8,43 +8,36 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg:       #0c0f14;
-    --surface:  #141820;
-    --surface2: #1c2230;
-    --border:   #252d3d;
-    --border2:  #2e3850;
-    --text:     #e8edf5;
-    --muted:    #7a8599;
-    --faint:    #3a4560;
-    --accent:   #00c896;
-    --accent2:  #0090ff;
-    --warn:     #f59e0b;
-    --danger:   #f26b50;
-    --mono:     'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
-    --sans:     'Inter', 'Segoe UI', system-ui, sans-serif;
-    --radius:   10px;
-    --bar-h:    3px;
+    --bg:         #0c0f14;
+    --surface:    #141820;
+    --surface2:   #1c2230;
+    --border:     #252d3d;
+    --border2:    #2e3850;
+    --text:       #e8edf5;
+    --muted:      #7a8599;
+    --faint:      #3a4560;
+    --accent:     #00c896;
+    --accent2:    #0090ff;
+    --warn:       #f59e0b;
+    --danger:     #f26b50;
+    --quiz-col:   #a78bfa;
+    --mono:       'JetBrains Mono', 'Fira Code', monospace;
+    --sans:       'Inter', 'Segoe UI', system-ui, sans-serif;
+    --radius:     10px;
+    --bar-h:      3px;
   }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--sans);
-    font-size: 14px;
-    line-height: 1.6;
-    min-height: 100vh;
-  }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 14px; line-height: 1.6; min-height: 100vh; }
 
-  /* Layout */
   .shell {
     display: grid;
-    grid-template-columns: 320px 1fr;
+    grid-template-columns: 300px 1fr;
     grid-template-rows: 56px 1fr 96px;
     height: 100vh;
     overflow: hidden;
   }
 
-  /* Top bar */
+  /* ── Top bar ─────────────────────────────────── */
   .topbar {
     grid-column: 1 / -1;
     background: var(--surface);
@@ -52,582 +45,644 @@
     display: flex;
     align-items: center;
     padding: 0 24px;
-    gap: 16px;
+    gap: 14px;
   }
-  .topbar-logo {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--accent);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    flex-shrink: 0;
+  .topbar-logo { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: .12em; text-transform: uppercase; flex-shrink: 0; }
+  .topbar-title { font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+  .topbar-stats { display: flex; gap: 18px; flex-shrink: 0; }
+  .stat { text-align: right; }
+  .stat-val { font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--text); }
+  .stat-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+  .settings-btn {
+    background: none; border: none; color: var(--faint); cursor: pointer; padding: 5px;
+    border-radius: 6px; transition: color .1s; flex-shrink: 0;
   }
-  .topbar-title {
-    font-size: 13px;
-    color: var(--muted);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .topbar-stats {
-    margin-left: auto;
-    display: flex;
-    gap: 20px;
-    flex-shrink: 0;
-  }
-  .stat {
-    text-align: right;
-  }
-  .stat-val {
-    font-family: var(--mono);
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text);
-  }
-  .stat-lbl {
-    font-size: 10px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
+  .settings-btn:hover { color: var(--muted); }
 
-  /* Sidebar */
-  .sidebar {
-    background: var(--surface);
-    border-right: 1px solid var(--border);
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border2) transparent;
-  }
+  /* ── Sidebar ─────────────────────────────────── */
+  .sidebar { background: var(--surface); border-right: 1px solid var(--border); overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border2) transparent; }
   .sidebar::-webkit-scrollbar { width: 4px; }
   .sidebar::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
 
-  .sidebar-header {
-    padding: 14px 16px 10px;
-    font-size: 10px;
-    font-family: var(--mono);
-    color: var(--muted);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+  .module-header {
+    padding: 8px 16px 5px;
+    font-size: 9px; font-family: var(--mono); color: var(--faint);
+    letter-spacing: .14em; text-transform: uppercase;
     border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
     background: var(--surface);
-    z-index: 1;
   }
 
+  /* Episode items */
   .ep-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 16px;
-    cursor: pointer;
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 16px; cursor: pointer;
     border-bottom: 1px solid var(--border);
-    transition: background 0.1s;
-    position: relative;
+    transition: background .1s; position: relative;
   }
   .ep-item:hover { background: var(--surface2); }
-  .ep-item.active {
-    background: var(--surface2);
-  }
-  .ep-item.active::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: var(--accent);
-    border-radius: 0 2px 2px 0;
-  }
-
-  .ep-num {
-    font-family: var(--mono);
-    font-size: 10px;
-    color: var(--faint);
-    width: 22px;
-    flex-shrink: 0;
-    text-align: center;
-  }
-  .ep-item.active .ep-num,
-  .ep-item.played .ep-num { color: var(--accent); }
-
+  .ep-item.active { background: var(--surface2); }
+  .ep-item.active::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent); border-radius: 0 2px 2px 0; }
+  .ep-num { font-family: var(--mono); font-size: 10px; color: var(--faint); width: 22px; flex-shrink: 0; text-align: center; }
+  .ep-item.active .ep-num, .ep-item.played .ep-num { color: var(--accent); }
   .ep-info { flex: 1; min-width: 0; }
-  .ep-name {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.3;
-  }
+  .ep-name { font-size: 12px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3; }
   .ep-item.played .ep-name { color: var(--muted); }
-  .ep-meta {
-    font-size: 10px;
-    color: var(--muted);
-    margin-top: 2px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .tag {
-    font-size: 9px;
-    padding: 1px 6px;
-    border-radius: 20px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    flex-shrink: 0;
-  }
-
-  .check-icon {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: var(--accent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    font-size: 8px;
-    color: #000;
-  }
+  .ep-meta { font-size: 10px; color: var(--muted); margin-top: 2px; display: flex; align-items: center; gap: 6px; }
+  .tag { font-size: 9px; padding: 1px 6px; border-radius: 20px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; flex-shrink: 0; }
+  .check-icon { width: 14px; height: 14px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 8px; color: #000; }
   .ep-item:not(.played) .check-icon { display: none; }
 
-  /* Main content */
-  .main {
-    background: var(--bg);
-    overflow-y: auto;
-    padding: 32px 36px;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border2) transparent;
+  /* Quiz items */
+  .quiz-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 16px; cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: background .1s; position: relative;
+    background: rgba(167,139,250,.035);
   }
+  .quiz-item::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--quiz-col); opacity: .4; }
+  .quiz-item:hover:not(.locked) { background: rgba(167,139,250,.08); }
+  .quiz-item.active { background: rgba(167,139,250,.09); }
+  .quiz-item.active::before { opacity: 1; }
+  .quiz-item.locked { opacity: .32; cursor: default; pointer-events: none; }
+  .quiz-item.completed::before { background: var(--accent); opacity: .6; }
+  .quiz-icon { width: 22px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: var(--quiz-col); }
+  .quiz-item.completed .quiz-icon { color: var(--accent); }
+  .quiz-item.locked .quiz-icon { color: var(--faint); }
+  .quiz-info { flex: 1; min-width: 0; }
+  .quiz-name { font-size: 11px; font-weight: 600; color: var(--quiz-col); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .quiz-item.locked .quiz-name { color: var(--faint); }
+  .quiz-item.completed .quiz-name { color: var(--accent); }
+  .quiz-sub { font-size: 10px; color: var(--muted); margin-top: 1px; }
+  .score-pill { font-family: var(--mono); font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 700; flex-shrink: 0; }
+
+  /* ── Main panel ──────────────────────────────── */
+  .main { background: var(--bg); overflow-y: auto; padding: 30px 34px; scrollbar-width: thin; scrollbar-color: var(--border2) transparent; }
   .main::-webkit-scrollbar { width: 4px; }
   .main::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
 
-  .now-playing-tag {
-    display: inline-block;
-    font-family: var(--mono);
-    font-size: 10px;
-    color: var(--accent);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
+  /* Episode view */
+  .ep-label { font-family: var(--mono); font-size: 10px; color: var(--accent); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 10px; }
+  .ep-big-num { font-family: var(--mono); font-size: 60px; font-weight: 700; color: var(--border2); line-height: 1; margin-bottom: 4px; letter-spacing: -2px; }
+  .ep-big-title { font-size: 24px; font-weight: 600; color: var(--text); line-height: 1.25; margin-bottom: 14px; letter-spacing: -.3px; }
+  .ep-tag-row { display: flex; align-items: center; gap: 10px; margin-bottom: 26px; }
+  .ep-dur { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .concepts-block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 22px; }
+  .concepts-label { font-size: 10px; font-family: var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 10px; }
+  .concept-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { font-size: 11px; color: var(--muted); background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 3px 10px; }
 
-  .ep-big-num {
-    font-family: var(--mono);
-    font-size: 64px;
-    font-weight: 700;
-    color: var(--border2);
-    line-height: 1;
-    margin-bottom: 4px;
-    letter-spacing: -2px;
-  }
-
-  .ep-big-title {
-    font-size: 26px;
-    font-weight: 600;
-    color: var(--text);
-    line-height: 1.25;
-    margin-bottom: 16px;
-    letter-spacing: -0.3px;
-  }
-
-  .ep-tag-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 28px;
-  }
-
-  .ep-duration-badge {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-  }
-
-  .concepts-block {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 18px 20px;
-    margin-bottom: 24px;
-  }
-  .concepts-label {
-    font-size: 10px;
-    font-family: var(--mono);
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 12px;
-  }
-  .concept-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-  .chip {
-    font-size: 11px;
-    color: var(--muted);
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 3px 10px;
-  }
-
-  .nav-row {
-    display: flex;
-    gap: 10px;
-    margin-top: 28px;
-  }
+  .nav-row { display: flex; gap: 10px; margin-top: 22px; }
   .nav-btn {
-    flex: 1;
-    padding: 10px 16px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    color: var(--muted);
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.15s;
-    text-align: center;
+    flex: 1; padding: 9px 14px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); color: var(--muted); font-size: 12px; cursor: pointer;
+    transition: all .15s; text-align: center; font-family: var(--sans);
   }
-  .nav-btn:hover { border-color: var(--border2); color: var(--text); background: var(--surface2); }
-  .nav-btn:disabled { opacity: 0.3; cursor: default; }
-  .nav-btn.primary {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #000;
-    font-weight: 600;
-  }
+  .nav-btn:hover:not(:disabled) { border-color: var(--border2); color: var(--text); background: var(--surface2); }
+  .nav-btn:disabled { opacity: .3; cursor: default; }
+  .nav-btn.primary { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 600; }
   .nav-btn.primary:hover { background: #00e5ac; }
+  .nav-btn.quiz-cta { background: rgba(167,139,250,.12); border-color: rgba(167,139,250,.4); color: var(--quiz-col); }
+  .nav-btn.quiz-cta:hover { background: rgba(167,139,250,.2); border-color: rgba(167,139,250,.6); color: var(--text); }
 
-  /* Bottom player */
+  /* End-of-episode banner */
+  .ended-banner {
+    margin-top: 20px; padding: 14px 18px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius);
+    display: flex; align-items: center; gap: 14px;
+  }
+  .ended-text { flex: 1; font-size: 12px; color: var(--muted); }
+  .ended-text strong { color: var(--text); font-size: 13px; display: block; margin-bottom: 2px; }
+
+  /* ── Quiz view ───────────────────────────────── */
+  .quiz-label { font-family: var(--mono); font-size: 10px; color: var(--quiz-col); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 8px; }
+  .quiz-big-title { font-size: 22px; font-weight: 600; color: var(--text); line-height: 1.25; margin-bottom: 4px; }
+  .quiz-sub-text { font-size: 13px; color: var(--muted); margin-bottom: 28px; }
+
+  .q-block {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 18px 20px; margin-bottom: 12px;
+    transition: border-color .2s;
+  }
+  .q-block.correct { border-color: rgba(0,200,150,.5); }
+  .q-block.wrong   { border-color: rgba(242,107,80,.5); }
+  .q-num { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-bottom: 7px; }
+  .q-text { font-size: 13px; font-weight: 500; color: var(--text); line-height: 1.5; margin-bottom: 12px; }
+  .opts { display: flex; flex-direction: column; gap: 6px; }
+  .opt-btn {
+    text-align: left; padding: 8px 13px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 7px; color: var(--muted); font-size: 12px;
+    cursor: pointer; transition: all .12s; font-family: var(--sans); line-height: 1.45;
+    display: flex; gap: 8px; align-items: flex-start;
+  }
+  .opt-btn:hover:not(:disabled) { border-color: var(--border2); color: var(--text); background: #1e2535; }
+  .opt-btn.selected { border-color: var(--quiz-col); color: var(--text); background: rgba(167,139,250,.1); }
+  .opt-btn.reveal-correct { border-color: var(--accent); color: var(--accent); background: rgba(0,200,150,.07); }
+  .opt-btn.reveal-wrong   { border-color: var(--danger); color: var(--danger); background: rgba(242,107,80,.07); }
+  .opt-btn:disabled { cursor: default; }
+  .opt-letter { font-family: var(--mono); font-size: 10px; color: var(--faint); flex-shrink: 0; margin-top: 1px; }
+  .opt-btn.selected .opt-letter { color: var(--quiz-col); }
+  .opt-btn.reveal-correct .opt-letter { color: var(--accent); }
+  .opt-btn.reveal-wrong   .opt-letter { color: var(--danger); }
+
+  .exp-box {
+    margin-top: 10px; padding: 9px 13px;
+    background: var(--bg); border-left: 3px solid var(--border2);
+    border-radius: 0 5px 5px 0; font-size: 12px; color: var(--muted); line-height: 1.6;
+    display: none;
+  }
+  .exp-box.show { display: block; }
+  .exp-box.exp-correct { border-left-color: var(--accent); }
+  .exp-box.exp-wrong   { border-left-color: var(--danger); }
+
+  .quiz-footer { margin-top: 20px; display: flex; align-items: center; gap: 14px; }
+  .quiz-prog { font-family: var(--mono); font-size: 11px; color: var(--muted); flex: 1; }
+
+  /* ── Results view ────────────────────────────── */
+  .results-score-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
+  .score-big { font-family: var(--mono); font-size: 54px; font-weight: 700; line-height: 1; letter-spacing: -2px; }
+  .score-denom { font-family: var(--mono); font-size: 20px; color: var(--muted); }
+  .score-verdict { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; color: var(--muted); text-transform: uppercase; margin-bottom: 22px; }
+
+  .perfect-banner { background: rgba(0,200,150,.07); border: 1px solid rgba(0,200,150,.25); border-radius: var(--radius); padding: 14px 18px; color: var(--accent); font-size: 13px; margin-bottom: 20px; line-height: 1.5; }
+
+  .lesson-card {
+    background: var(--surface); border: 1px solid var(--border2);
+    border-radius: var(--radius); padding: 18px 22px; margin-bottom: 20px;
+    position: relative; overflow: hidden;
+  }
+  .lesson-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--quiz-col), var(--accent2)); }
+  .lesson-card-label { font-family: var(--mono); font-size: 10px; color: var(--quiz-col); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 12px; }
+  .lesson-body { font-size: 13px; color: var(--text); line-height: 1.75; }
+  .lesson-body p + p { margin-top: 10px; }
+  .lesson-source { font-family: var(--mono); font-size: 9px; color: var(--faint); text-transform: uppercase; letter-spacing: .08em; margin-top: 10px; }
+  .lesson-loading { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner { width: 14px; height: 14px; border: 2px solid var(--border2); border-top-color: var(--quiz-col); border-radius: 50%; animation: spin .8s linear infinite; flex-shrink: 0; }
+
+  .missed-section { margin-top: 20px; }
+  .missed-section-label { font-family: var(--mono); font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 10px; }
+  .missed-item {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-left: 3px solid var(--danger); border-radius: 0 7px 7px 0;
+    padding: 10px 14px; margin-bottom: 8px;
+  }
+  .missed-concept { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .06em; }
+  .missed-q { font-size: 12px; color: var(--text); font-weight: 500; margin-bottom: 5px; line-height: 1.4; }
+  .missed-ans { font-size: 12px; color: var(--accent); margin-bottom: 4px; }
+  .missed-exp { font-size: 12px; color: var(--muted); line-height: 1.55; }
+
+  /* ── Bottom player ───────────────────────────── */
   .player {
     grid-column: 1 / -1;
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    padding: 0 24px;
-    gap: 0;
+    background: var(--surface); border-top: 1px solid var(--border);
+    display: flex; flex-direction: column; padding: 0 24px;
   }
+  .progress-area { padding: 11px 0 0; display: flex; align-items: center; gap: 12px; }
+  .tlabel { font-family: var(--mono); font-size: 11px; color: var(--muted); width: 38px; flex-shrink: 0; text-align: right; }
+  .tlabel.r { text-align: left; }
+  .pbar { flex: 1; height: var(--bar-h); background: var(--border2); border-radius: 2px; cursor: pointer; position: relative; }
+  .pfill { height: 100%; background: var(--accent); border-radius: 2px; pointer-events: none; position: relative; }
+  .pfill::after { content: ''; position: absolute; right: -5px; top: -4px; width: 11px; height: 11px; background: var(--accent); border-radius: 50%; opacity: 0; transition: opacity .15s; }
+  .pbar:hover .pfill::after { opacity: 1; }
+  .ctrl-row { display: flex; align-items: center; gap: 8px; padding: 7px 0 11px; }
+  .cbtn { background: none; border: none; color: var(--muted); cursor: pointer; padding: 4px 6px; border-radius: 6px; transition: color .1s, background .1s; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 4px; line-height: 1; }
+  .cbtn:hover { color: var(--text); background: var(--surface2); }
+  .cbtn.playbtn { width: 36px; height: 36px; border-radius: 50%; background: var(--accent); color: #000; }
+  .cbtn.playbtn:hover { background: #00e5ac; }
+  .pname { flex: 1; text-align: center; font-size: 11px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 10px; }
+  .pname strong { color: var(--text); font-weight: 500; }
+  input[type=range] { -webkit-appearance: none; width: 76px; height: var(--bar-h); background: var(--border2); border-radius: 2px; outline: none; cursor: pointer; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); cursor: pointer; }
+  .spdbtn { font-family: var(--mono); font-size: 11px; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--muted); cursor: pointer; padding: 3px 8px; transition: all .1s; }
+  .spdbtn:hover { color: var(--text); border-color: var(--border2); }
 
-  .progress-area {
-    padding: 12px 0 0;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .time-label {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-    width: 38px;
-    flex-shrink: 0;
-    text-align: right;
-  }
-  .time-label.right { text-align: left; }
-  .progress-bar {
-    flex: 1;
-    height: var(--bar-h);
-    background: var(--border2);
-    border-radius: 2px;
-    cursor: pointer;
-    position: relative;
-    overflow: visible;
-  }
-  .progress-fill {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 2px;
-    pointer-events: none;
-    position: relative;
-  }
-  .progress-fill::after {
-    content: '';
-    position: absolute;
-    right: -5px;
-    top: -4px;
-    width: 11px;
-    height: 11px;
-    background: var(--accent);
-    border-radius: 50%;
-    opacity: 0;
-    transition: opacity 0.15s;
-  }
-  .progress-bar:hover .progress-fill::after { opacity: 1; }
+  /* ── Settings modal ──────────────────────────── */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.75); display: none; align-items: center; justify-content: center; z-index: 200; }
+  .overlay.show { display: flex; }
+  .modal { background: var(--surface2); border: 1px solid var(--border2); border-radius: 14px; padding: 26px 30px; width: 420px; max-width: 92vw; }
+  .modal h2 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+  .modal p { font-size: 12px; color: var(--muted); line-height: 1.55; margin-bottom: 18px; }
+  .modal label { font-family: var(--mono); font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; display: block; margin-bottom: 6px; }
+  .modal input { width: 100%; background: var(--bg); border: 1px solid var(--border2); border-radius: 7px; padding: 9px 13px; color: var(--text); font-family: var(--mono); font-size: 12px; outline: none; transition: border-color .15s; margin-bottom: 18px; }
+  .modal input:focus { border-color: var(--quiz-col); }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+  .mbtn { padding: 8px 18px; border-radius: 7px; font-size: 12px; cursor: pointer; font-family: var(--sans); transition: all .12s; border: 1px solid transparent; }
+  .mbtn.cancel { background: var(--surface); border-color: var(--border); color: var(--muted); }
+  .mbtn.cancel:hover { color: var(--text); }
+  .mbtn.save { background: var(--quiz-col); color: #000; font-weight: 600; }
+  .mbtn.save:hover { background: #c4b5fd; }
 
-  .controls-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 0 12px;
-  }
-  .ctrl-btn {
-    background: none;
-    border: none;
-    color: var(--muted);
-    cursor: pointer;
-    padding: 4px 6px;
-    border-radius: 6px;
-    transition: color 0.1s, background 0.1s;
-    font-size: 13px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    line-height: 1;
-  }
-  .ctrl-btn:hover { color: var(--text); background: var(--surface2); }
-  .ctrl-btn.play-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: var(--accent);
-    color: #000;
-    font-size: 14px;
-  }
-  .ctrl-btn.play-btn:hover { background: #00e5ac; }
-  .ctrl-btn.active { color: var(--accent); }
+  /* Keyboard hint */
+  .kbdhint { position: fixed; bottom: 104px; right: 20px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; font-size: 11px; color: var(--muted); display: none; z-index: 100; line-height: 1.85; }
+  .kbdhint.show { display: block; }
+  kbd { font-family: var(--mono); font-size: 10px; background: var(--surface); border: 1px solid var(--border2); border-radius: 4px; padding: 1px 5px; margin-right: 4px; color: var(--text); }
 
-  .player-ep-name {
-    flex: 1;
-    text-align: center;
-    font-size: 11px;
-    color: var(--muted);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    padding: 0 12px;
-  }
-  .player-ep-name strong {
-    color: var(--text);
-    font-weight: 500;
-  }
-
-  .volume-row {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .vol-icon { font-size: 12px; color: var(--muted); }
-  input[type=range] {
-    -webkit-appearance: none;
-    width: 80px;
-    height: var(--bar-h);
-    background: var(--border2);
-    border-radius: 2px;
-    outline: none;
-    cursor: pointer;
-  }
-  input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: var(--accent);
-    cursor: pointer;
-  }
-  .speed-btn {
-    font-family: var(--mono);
-    font-size: 11px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--muted);
-    cursor: pointer;
-    padding: 3px 8px;
-    transition: all 0.1s;
-  }
-  .speed-btn:hover { color: var(--text); border-color: var(--border2); }
-
-  .kbd-hint {
-    position: fixed;
-    bottom: 104px;
-    right: 20px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 10px 14px;
-    font-size: 11px;
-    color: var(--muted);
-    display: none;
-    z-index: 100;
-    line-height: 1.8;
-  }
-  .kbd-hint.show { display: block; }
-  kbd {
-    font-family: var(--mono);
-    font-size: 10px;
-    background: var(--surface);
-    border: 1px solid var(--border2);
-    border-radius: 4px;
-    padding: 1px 5px;
-    margin-right: 4px;
-    color: var(--text);
-  }
+  /* ── Certificate ─────────────────────────────── */
+  .cert-sidebar-wrap { margin: 10px 8px 8px; }
+  .cert-sidebar-block { border: 1px solid rgba(167,139,250,.3); border-radius: 7px; padding: 12px 13px; background: rgba(167,139,250,.05); position: relative; overflow: hidden; }
+  .cert-sidebar-block::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background: linear-gradient(90deg, var(--quiz-col), var(--accent)); }
+  .cert-sb-label { font-family: var(--mono); font-size: 10px; color: var(--quiz-col); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 6px; }
+  .cert-sb-desc { font-size: 11px; color: var(--muted); line-height: 1.5; margin-bottom: 10px; }
+  .cert-dl-btn { width: 100%; padding: 8px; background: rgba(167,139,250,.12); border: 1px solid rgba(167,139,250,.45); border-radius: 5px; color: var(--quiz-col); font-family: var(--mono); font-size: 11px; font-weight: 600; cursor: pointer; transition: all .15s; letter-spacing: .05em; display: flex; align-items: center; justify-content: center; gap: 7px; }
+  .cert-dl-btn:hover { background: rgba(167,139,250,.22); border-color: rgba(167,139,250,.75); color: var(--text); }
+  .cert-result-btn { display: inline-flex; align-items: center; gap: 7px; padding: 10px 20px; background: rgba(167,139,250,.12); border: 1px solid rgba(167,139,250,.45); border-radius: 6px; color: var(--quiz-col); font-family: var(--mono); font-size: 12px; font-weight: 600; cursor: pointer; transition: all .15s; }
+  .cert-result-btn:hover { background: rgba(167,139,250,.24); border-color: var(--quiz-col); color: var(--text); }
+  .cert-complete-banner { background: rgba(167,139,250,.07); border: 1px solid rgba(167,139,250,.25); border-radius: 7px; padding: 14px 16px; margin-bottom: 20px; display: flex; align-items: flex-start; gap: 12px; }
+  .cert-complete-banner svg { flex-shrink: 0; margin-top: 1px; }
+  .cert-complete-text { font-size: 12px; color: var(--muted); line-height: 1.55; }
+  .cert-complete-text strong { color: var(--quiz-col); display: block; margin-bottom: 3px; font-size: 13px; }
 
   svg { display: block; }
 
   @media (max-width: 680px) {
     .shell { grid-template-columns: 1fr; grid-template-rows: 56px 1fr 96px; }
     .sidebar { display: none; }
+    .main { padding: 18px 16px; }
     .ep-big-num { font-size: 40px; }
     .ep-big-title { font-size: 20px; }
-    .main { padding: 20px 18px; }
   }
 </style>
 </head>
 <body>
 
 <div class="shell">
-
   <!-- Top bar -->
   <header class="topbar">
     <div class="topbar-logo">CCA Podcast</div>
     <div class="topbar-title" id="topbar-title">Select an episode to begin</div>
     <div class="topbar-stats">
-      <div class="stat">
-        <div class="stat-val" id="stat-played">0</div>
-        <div class="stat-lbl">Played</div>
-      </div>
-      <div class="stat">
-        <div class="stat-val">16</div>
-        <div class="stat-lbl">Episodes</div>
-      </div>
+      <div class="stat"><div class="stat-val" id="stat-played">0</div><div class="stat-lbl">Played</div></div>
+      <div class="stat"><div class="stat-val" id="stat-quizzes">0</div><div class="stat-lbl">Quizzes</div></div>
+      <div class="stat"><div class="stat-val">16</div><div class="stat-lbl">Episodes</div></div>
     </div>
+    <button class="settings-btn" onclick="openSettings()" title="API Key Settings">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M6.5 1a.5.5 0 000 1h.5v.535A5.504 5.504 0 003.25 8c0 3.038 2.462 5.5 5.5 5.5h.502a5.5 5.5 0 004.748-8.285V4.5h.5a.5.5 0 000-1H6.5zm1.25 8.5V7h1.5v2.5h-1.5zM7 6a1 1 0 112 0 1 1 0 01-2 0z"/></svg>
+    </button>
   </header>
 
   <!-- Sidebar -->
   <aside class="sidebar">
-    <div class="sidebar-header">Episodes</div>
     <div id="ep-list"></div>
+    <div id="cert-sidebar-wrap" class="cert-sidebar-wrap" style="display:none"></div>
   </aside>
 
   <!-- Main -->
   <main class="main" id="main-panel">
-    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;color:var(--muted);">
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;color:var(--muted);text-align:center">
       <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
         <circle cx="24" cy="24" r="22" stroke="var(--border2)" stroke-width="2"/>
         <path d="M19 16v16l14-8-14-8z" fill="var(--faint)"/>
       </svg>
-      <div style="font-size:13px;">Select an episode from the sidebar</div>
-      <div style="font-size:11px;color:var(--faint);">16 episodes · CCA Exam Prep Series</div>
+      <div style="font-size:13px">Select an episode from the sidebar</div>
+      <div style="font-size:11px;color:var(--faint)">16 episodes · 8 quizzes · CCA Exam Prep Series</div>
     </div>
   </main>
 
   <!-- Player -->
   <footer class="player">
     <div class="progress-area">
-      <span class="time-label" id="time-cur">0:00</span>
-      <div class="progress-bar" id="progress-bar">
-        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
-      </div>
-      <span class="time-label right" id="time-dur">0:00</span>
+      <span class="tlabel" id="time-cur">0:00</span>
+      <div class="pbar" id="pbar"><div class="pfill" id="pfill" style="width:0%"></div></div>
+      <span class="tlabel r" id="time-dur">0:00</span>
     </div>
-    <div class="controls-row">
-      <button class="ctrl-btn" id="btn-prev" onclick="prevEp()" title="Previous">
+    <div class="ctrl-row">
+      <button class="cbtn" onclick="prevEp()" title="Previous">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M3 3h1.5v10H3V3zm10 0L6.5 8 13 13V3z"/></svg>
       </button>
-      <button class="ctrl-btn" onclick="skip(-15)" title="Back 15s" style="font-family:var(--mono);font-size:10px;color:var(--muted);gap:2px">
-        <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 2a6 6 0 100 12A6 6 0 008 2zM6 6l-2-2 1-1 3 3-3 3-1-1 2-2zm4 3H8V7h2v2z"/></svg>
-        15
+      <button class="cbtn" onclick="skip(-15)" style="font-family:var(--mono);font-size:10px;gap:2px">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 3a5 5 0 100 10A5 5 0 008 3zm0-1A6 6 0 110 8h1a5 5 0 105 5V8H8V6.5L5.5 9 8 11.5V10h1a6 6 0 000-8z"/></svg>15
       </button>
-      <button class="ctrl-btn play-btn" id="btn-play" onclick="togglePlay()" title="Play / Pause (Space)">
+      <button class="cbtn playbtn" id="btn-play" onclick="togglePlay()" title="Space">
         <svg id="play-icon" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M3 2l10 5-10 5V2z"/></svg>
       </button>
-      <button class="ctrl-btn" onclick="skip(30)" title="Forward 30s" style="font-family:var(--mono);font-size:10px;color:var(--muted);gap:2px">
-        30
-        <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 2a6 6 0 100 12A6 6 0 008 2zM6 9V7h2V5l2 2-2 2zm3-1l1-1-1-1v2z"/></svg>
+      <button class="cbtn" onclick="skip(30)" style="font-family:var(--mono);font-size:10px;gap:2px">
+        30<svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 3a5 5 0 100 10A5 5 0 008 3zm0-1A6 6 0 100 8h1a5 5 0 110 0H8V6.5L10.5 9 8 11.5V10H7a6 6 0 010-8z"/></svg>
       </button>
-      <button class="ctrl-btn" id="btn-next" onclick="nextEp()" title="Next">
+      <button class="cbtn" onclick="nextEp()" title="Next">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M11.5 3H13v10h-1.5V3zM3 3l6.5 5L3 13V3z"/></svg>
       </button>
-
-      <div class="player-ep-name" id="player-ep-name">—</div>
-
-      <button class="speed-btn" id="speed-btn" onclick="cycleSpeed()" title="Playback speed">1×</button>
-
-      <div class="volume-row">
-        <span class="vol-icon">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M2 5h2l3-3v10L4 9H2V5zm9.5 2a3.5 3.5 0 00-2.5-3.35v6.7A3.5 3.5 0 0011.5 7zm-2.5-5.2A5.5 5.5 0 0113.5 7a5.5 5.5 0 01-4.5 5.2V1.8z"/></svg>
-        </span>
-        <input type="range" id="vol" min="0" max="1" step="0.05" value="1" oninput="setVol(this.value)">
+      <div class="pname" id="pname">—</div>
+      <button class="spdbtn" id="spdbtn" onclick="cycleSpeed()">1×</button>
+      <div style="display:flex;align-items:center;gap:5px">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" style="color:var(--muted)"><path d="M2 5h2l3-3v10L4 9H2V5zm9.5 2a3.5 3.5 0 00-2.5-3.35v6.7A3.5 3.5 0 0011.5 7z"/></svg>
+        <input type="range" min="0" max="1" step="0.05" value="1" oninput="audio.volume=this.value">
       </div>
-
-      <button class="ctrl-btn" onclick="toggleKbd()" title="Keyboard shortcuts" style="font-size:11px;font-family:var(--mono);color:var(--faint)">?</button>
+      <button class="cbtn" onclick="toggleKbd()" style="font-size:11px;font-family:var(--mono);color:var(--faint)">?</button>
     </div>
   </footer>
-
 </div>
 
-<!-- Keyboard shortcuts overlay -->
-<div class="kbd-hint" id="kbd-hint">
+<!-- Keyboard shortcuts -->
+<div class="kbdhint" id="kbdhint">
   <div><kbd>Space</kbd> Play / Pause</div>
   <div><kbd>←</kbd><kbd>→</kbd> Seek 5s</div>
   <div><kbd>↑</kbd><kbd>↓</kbd> Prev / Next episode</div>
   <div><kbd>J</kbd><kbd>L</kbd> Skip −15s / +30s</div>
   <div><kbd>S</kbd> Cycle speed</div>
-  <div><kbd>?</kbd> Toggle this panel</div>
+  <div><kbd>?</kbd> Toggle this</div>
+</div>
+
+<!-- Settings modal -->
+<div class="overlay" id="settings-overlay">
+  <div class="modal">
+    <h2>API Settings</h2>
+    <p>Provide an Anthropic API key to enable AI-generated personalized remedial lessons after each quiz. Without a key, lessons are assembled locally from concept explanations.</p>
+    <label>Anthropic API Key</label>
+    <input type="password" id="api-key-input" placeholder="sk-ant-api03-...">
+    <div class="modal-actions">
+      <button class="mbtn cancel" onclick="closeSettings()">Cancel</button>
+      <button class="mbtn save" onclick="saveApiKey()">Save</button>
+    </div>
+  </div>
 </div>
 
 <audio id="audio"></audio>
 
 <script>
+/* ─── Global state ─────────────────────────────────────────────────────── */
 const SPEEDS = [1, 1.25, 1.5, 1.75, 2];
-let speedIdx = 0;
-let currentEp = null;
-let played = JSON.parse(localStorage.getItem('cca-played') || '{}');
+let speedIdx    = 0;
+let currentEp   = null;
+let played      = JSON.parse(localStorage.getItem('cca-played')   || '{}');
+let quizState   = JSON.parse(localStorage.getItem('cca-quizzes')  || '{}');
+let apiKey      = localStorage.getItem('cca-api-key') || '';
 
-const EPISODES = [
-  { num: 1,  file: "Lesson_01_Why_People_Fail_the_CCA_Exam.mp3",              title: "Why People Fail the CCA Exam",                    duration: "~8 min",  tag: "Foundations",       tagColor: "#0369a1", tagBg: "#e0f2fe",
-    concepts: ["11 failure modes taxonomy","stochastic vs deterministic behavior","prompting as advisory not enforcement","RAG as coupled error propagation","safety embedded not post-processing","eval strategy requirements"] },
-  { num: 2,  file: "Lesson_02_Agentic_Error_Handling.mp3",                    title: "Agentic Error Handling",                          duration: "~9 min",  tag: "Error Control",     tagColor: "#b91c1c", tagBg: "#fee2e2",
-    concepts: ["error type taxonomy","detection vs recovery separation","structured retry strategies","fallback mode hierarchy","state isolation","control flow vs model reasoning"] },
-  { num: 3,  file: "Lesson_03_Two_Critical_Failure_Modes.mp3",                title: "Two Critical Failure Modes",                      duration: "~10 min", tag: "Error Control",     tagColor: "#b91c1c", tagBg: "#fee2e2",
-    concepts: ["tool selection failures","argument construction failures","schema validation as pre-execution gate","retry controller outside model","404 vs true absence","MCP server down handling"] },
-  { num: 4,  file: "Lesson_04_MCP_Manifest_and_RPC_Enforcement.mp3",          title: "MCP Manifest & RPC Enforcement",                  duration: "~9 min",  tag: "MCP Layer",         tagColor: "#92400e", tagBg: "#fef3c7",
-    concepts: ["manifest as contract","RPC as controlled execution","status semantics: NOT_FOUND vs UNAVAILABLE vs TIMEOUT","model proposes — manifest constrains — RPC enforces","compiler boundary analogy"] },
-  { num: 5,  file: "Lesson_05_Claude_MD_as_Control_Layer.mp3",                title: "Claude.md as Control Layer",                      duration: "~9 min",  tag: "Policy Layer",      tagColor: "#065f46", tagBg: "#d1fae5",
-    concepts: ["Claude.md as policy not prompt","epistemic rules","decision rules","output structure enforcement","enforces interpretation not execution","traceability via structure"] },
-  { num: 6,  file: "Lesson_06_Claude_MD_and_Skill_MD_Policy_vs_Behavior.mp3", title: "Claude.md vs Skill.md — Policy vs Behavior",       duration: "~10 min", tag: "Policy Layer",      tagColor: "#065f46", tagBg: "#d1fae5",
-    concepts: ["cognitive vs procedural separation","invariant vs task-specific rules","retry in Skill.md not Claude.md","constitution vs playbook analogy","three-layer removal failure modes"] },
-  { num: 7,  file: "Lesson_07_Hub_and_Spoke_Agent_Architecture.mp3",          title: "Hub-and-Spoke Architecture",                      duration: "~10 min", tag: "Architecture",      tagColor: "#3730a3", tagBg: "#ede9fe",
-    concepts: ["hub as planner not executor","all communication through hub","hub Skill.md routing logic","cascading failure prevention","hub validates every spoke result"] },
-  { num: 8,  file: "Lesson_08_Multi_Agent_Failure_Modes.mp3",                 title: "Multi-Agent Failure Modes",                       duration: "~10 min", tag: "Architecture",      tagColor: "#3730a3", tagBg: "#ede9fe",
-    concepts: ["divergent reasoning","redundant execution","conflicting outputs","error amplification","unbounded loops","state contamination","spoke specification as contract"] },
-  { num: 9,  file: "Lesson_09_Goal_Decomposition_in_the_Hub.mp3",             title: "Goal Decomposition in the Hub",                   duration: "~9 min",  tag: "Architecture",      tagColor: "#3730a3", tagBg: "#ede9fe",
-    concepts: ["goal classification","task segmentation rules","dependency mapping","agent assignment logic","validation checkpoints","termination criteria","single responsible agent per step"] },
-  { num: 10, file: "Lesson_10_Memory_Caching_and_State_Management.mp3",       title: "Memory, Caching & State",                         duration: "~10 min", tag: "State Mgmt",        tagColor: "#7c2d12", tagBg: "#ffedd5",
-    concepts: ["memory vs cache vs state","safe vs unsafe caching","state contamination causes","structured logging","recovery: retry vs fallback vs escalation","validated-data-only memory"] },
-  { num: 11, file: "Lesson_11_Managing_the_Context_Window.mp3",               title: "Managing the Context Window",                     duration: "~10 min", tag: "Context Design",    tagColor: "#1e3a8a", tagBg: "#dbeafe",
-    concepts: ["context as computation surface","retrieval → compression → selection","attention dilution","context budget enforcement","hub as curator","over-compression vs overloading"] },
-  { num: 12, file: "Lesson_12_Determinism_Without_Schema.mp3",                title: "Determinism Without Schema",                      duration: "~9 min",  tag: "Unstructured",      tagColor: "#713f12", tagBg: "#fef9c3",
-    concepts: ["intermediate structure as determinism","semantic contracts","multi-pass validation","confidence scoring","cross-agent agreement","traceable transformations","bounded variation"] },
-  { num: 13, file: "Lesson_13_From_Text_to_Structure_Defining_Elements.mp3",  title: "Defining Elements in Unstructured Data",          duration: "~9 min",  tag: "Unstructured",      tagColor: "#713f12", tagBg: "#fef9c3",
-    concepts: ["element as semantic requirement","Skill.md defines elements not model","presence enforcement before accuracy","minimal sufficient element design","risk = cause + impact minimum"] },
-  { num: 14, file: "Lesson_14_Predicting_Goals_and_Defining_Elements.mp3",    title: "Predicting Goals & Defining Elements",            duration: "~9 min",  tag: "Unstructured",      tagColor: "#713f12", tagBg: "#fef9c3",
-    concepts: ["goal class taxonomy","goal-to-element mapping","element templates in Skill.md","goal classification step","ambiguous goal handling","wrong classification failure mode"] },
-  { num: 15, file: "Lesson_15_Designing_Task_Schemas.mp3",                    title: "Designing Task Schemas",                          duration: "~8 min",  tag: "Unstructured",      tagColor: "#713f12", tagBg: "#fef9c3",
-    concepts: ["what must be true for output to be useful","minimal schema design","validation as schema purpose","actionable not available information","over-specifying schema failure mode"] },
-  { num: 16, file: "Lesson_16_Validating_Unstructured_Outputs.mp3",           title: "Validating Unstructured Outputs",                 duration: "~10 min", tag: "Validation",        tagColor: "#14532d", tagBg: "#dcfce7",
-    concepts: ["presence vs accuracy","five-layer validation funnel","structural / semantic / grounded truth","consistency check layer","cross-pass validation","managing disagreement vs forcing truth"] },
-];
+// Active quiz
+let activeQuiz    = null;
+let quizAnswers   = {};  // { qIdx: chosenIdx }
+let quizSubmitted = false;
 
 const audio = document.getElementById('audio');
-const playIcon = document.getElementById('play-icon');
 
-// Build sidebar
-const list = document.getElementById('ep-list');
-EPISODES.forEach(ep => {
-  const div = document.createElement('div');
-  div.className = 'ep-item' + (played[ep.num] ? ' played' : '');
-  div.id = 'ep-' + ep.num;
-  div.innerHTML = `
+/* ─── Episode data ─────────────────────────────────────────────────────── */
+const EPISODES = [
+  { num:  1, file:"Lesson_01_Why_People_Fail_the_CCA_Exam.mp3",              title:"Why People Fail the CCA Exam",                duration:"~8 min",  tag:"Foundations",    tagColor:"#0369a1", tagBg:"#e0f2fe",
+    concepts:["11 failure modes taxonomy","stochastic vs deterministic behavior","prompting as advisory not enforcement","RAG as coupled error propagation","safety embedded not post-processing","eval strategy requirements"] },
+  { num:  2, file:"Lesson_02_Agentic_Error_Handling.mp3",                    title:"Agentic Error Handling",                      duration:"~9 min",  tag:"Error Control",  tagColor:"#b91c1c", tagBg:"#fee2e2",
+    concepts:["error type taxonomy","detection vs recovery separation","structured retry strategies","fallback mode hierarchy","state isolation","control flow vs model reasoning"] },
+  { num:  3, file:"Lesson_03_Two_Critical_Failure_Modes.mp3",                title:"Two Critical Failure Modes",                  duration:"~10 min", tag:"Error Control",  tagColor:"#b91c1c", tagBg:"#fee2e2",
+    concepts:["tool selection failures","argument construction failures","schema validation as pre-execution gate","retry controller outside model","404 vs true absence","MCP server down handling"] },
+  { num:  4, file:"Lesson_04_MCP_Manifest_and_RPC_Enforcement.mp3",          title:"MCP Manifest & RPC Enforcement",              duration:"~9 min",  tag:"MCP Layer",      tagColor:"#92400e", tagBg:"#fef3c7",
+    concepts:["manifest as contract","RPC as controlled execution","status semantics: NOT_FOUND vs UNAVAILABLE vs TIMEOUT","model proposes — manifest constrains — RPC enforces","compiler boundary analogy"] },
+  { num:  5, file:"Lesson_05_Claude_MD_as_Control_Layer.mp3",                title:"Claude.md as Control Layer",                  duration:"~9 min",  tag:"Policy Layer",   tagColor:"#065f46", tagBg:"#d1fae5",
+    concepts:["Claude.md as policy not prompt","epistemic rules","decision rules","output structure enforcement","enforces interpretation not execution","traceability via structure"] },
+  { num:  6, file:"Lesson_06_Claude_MD_and_Skill_MD_Policy_vs_Behavior.mp3", title:"Claude.md vs Skill.md — Policy vs Behavior",  duration:"~10 min", tag:"Policy Layer",   tagColor:"#065f46", tagBg:"#d1fae5",
+    concepts:["cognitive vs procedural separation","invariant vs task-specific rules","retry in Skill.md not Claude.md","constitution vs playbook analogy","three-layer removal failure modes"] },
+  { num:  7, file:"Lesson_07_Hub_and_Spoke_Agent_Architecture.mp3",          title:"Hub-and-Spoke Architecture",                  duration:"~10 min", tag:"Architecture",   tagColor:"#3730a3", tagBg:"#ede9fe",
+    concepts:["hub as planner not executor","all communication through hub","hub Skill.md routing logic","cascading failure prevention","hub validates every spoke result"] },
+  { num:  8, file:"Lesson_08_Multi_Agent_Failure_Modes.mp3",                 title:"Multi-Agent Failure Modes",                   duration:"~10 min", tag:"Architecture",   tagColor:"#3730a3", tagBg:"#ede9fe",
+    concepts:["divergent reasoning","redundant execution","conflicting outputs","error amplification","unbounded loops","state contamination","spoke specification as contract"] },
+  { num:  9, file:"Lesson_09_Goal_Decomposition_in_the_Hub.mp3",             title:"Goal Decomposition in the Hub",               duration:"~9 min",  tag:"Architecture",   tagColor:"#3730a3", tagBg:"#ede9fe",
+    concepts:["goal classification","task segmentation rules","dependency mapping","agent assignment logic","validation checkpoints","termination criteria","single responsible agent per step"] },
+  { num: 10, file:"Lesson_10_Memory_Caching_and_State_Management.mp3",       title:"Memory, Caching & State",                     duration:"~10 min", tag:"State Mgmt",     tagColor:"#7c2d12", tagBg:"#ffedd5",
+    concepts:["memory vs cache vs state","safe vs unsafe caching","state contamination causes","structured logging","recovery: retry vs fallback vs escalation","validated-data-only memory"] },
+  { num: 11, file:"Lesson_11_Managing_the_Context_Window.mp3",               title:"Managing the Context Window",                 duration:"~10 min", tag:"Context Design", tagColor:"#1e3a8a", tagBg:"#dbeafe",
+    concepts:["context as computation surface","retrieval → compression → selection","attention dilution","context budget enforcement","hub as curator","over-compression vs overloading"] },
+  { num: 12, file:"Lesson_12_Determinism_Without_Schema.mp3",                title:"Determinism Without Schema",                  duration:"~9 min",  tag:"Unstructured",   tagColor:"#713f12", tagBg:"#fef9c3",
+    concepts:["intermediate structure as determinism","semantic contracts","multi-pass validation","confidence scoring","cross-agent agreement","traceable transformations","bounded variation"] },
+  { num: 13, file:"Lesson_13_From_Text_to_Structure_Defining_Elements.mp3",  title:"Defining Elements in Unstructured Data",      duration:"~9 min",  tag:"Unstructured",   tagColor:"#713f12", tagBg:"#fef9c3",
+    concepts:["element as semantic requirement","Skill.md defines elements not model","presence enforcement before accuracy","minimal sufficient element design","risk = cause + impact minimum"] },
+  { num: 14, file:"Lesson_14_Predicting_Goals_and_Defining_Elements.mp3",    title:"Predicting Goals & Defining Elements",        duration:"~9 min",  tag:"Unstructured",   tagColor:"#713f12", tagBg:"#fef9c3",
+    concepts:["goal class taxonomy","goal-to-element mapping","element templates in Skill.md","goal classification step","ambiguous goal handling","wrong classification failure mode"] },
+  { num: 15, file:"Lesson_15_Designing_Task_Schemas.mp3",                    title:"Designing Task Schemas",                      duration:"~8 min",  tag:"Unstructured",   tagColor:"#713f12", tagBg:"#fef9c3",
+    concepts:["what must be true for output to be useful","minimal schema design","validation as schema purpose","actionable not available information","over-specifying schema failure mode"] },
+  { num: 16, file:"Lesson_16_Validating_Unstructured_Outputs.mp3",           title:"Validating Unstructured Outputs",             duration:"~10 min", tag:"Validation",     tagColor:"#14532d", tagBg:"#dcfce7",
+    concepts:["presence vs accuracy","five-layer validation funnel","structural / semantic / grounded truth","consistency check layer","cross-pass validation","managing disagreement vs forcing truth"] },
+];
+
+/* ─── Quiz data (8 modules × 5 questions) ─────────────────────────────── */
+const QUIZ_DATA = [
+  /* ── Module 1: Eps 1-2 ────────────────────────────────────────────── */
+  { id:1, eps:[1,2], title:"Module 1 Quiz", subtitle:"Foundations & Error Control",
+    questions:[
+      { q:"The core heuristic driving this series: reliable systems fail when:",
+        opts:["The context window is over-populated with irrelevant data","The solution depends on the model doing the right thing","Too many tools are exposed simultaneously","Prompts are insufficiently structured"],
+        correct:1, concept:"architecture vs model reliance",
+        exp:"If your solution depends on the model doing the right thing, it will fail. Reliable behavior comes from architectural constraints — schemas, validation, explicit control flow — not from model capability or prompt quality." },
+      { q:"Using the same model as planner, executor, and validator simultaneously creates:",
+        opts:["Efficient consolidation of reasoning steps","A single point of probabilistic failure","An acceptable pattern for atomic tasks","Reduced inter-agent coordination overhead"],
+        correct:1, concept:"role separation",
+        exp:"Three critical functions, one stochastic process. Any model failure corrupts all three roles simultaneously. Role separation distributes failure surface and enables independent validation at each boundary." },
+      { q:"Detection and recovery must be treated as separate concerns because:",
+        opts:["Combined logic is harder to test","Classifying failure type must precede choosing the response","Recovery is faster when detection is skipped","Models handle recovery better than detection"],
+        correct:1, concept:"detection vs recovery separation",
+        exp:"Detection identifies what failed and classifies it (no result, schema violation, timeout, etc.). Recovery determines the appropriate response (retry, fallback, escalate). Conflating them produces ambiguous state transitions." },
+      { q:"RAG introduces a failure mode not present in unaugmented generation because:",
+        opts:["Retrieval adds latency that degrades response coherence","Bad retrieval gives the model plausible context supporting confident hallucination","Structured retrieval forces output into rigid schemas","Cached retrieval results may not reflect current state"],
+        correct:1, concept:"RAG as coupled error propagation",
+        exp:"Without RAG, hallucination produces output. With bad retrieval, hallucination produces output that cites something — making it harder to detect and reject. Good retrieval can still be ignored without explicit grounding verification." },
+      { q:"State isolation in agentic systems is critical because:",
+        opts:["It prevents memory leaks in long-running processes","It allows agents to share context more efficiently","An error in one step must not corrupt state used by subsequent steps","It reduces total API call volume across agents"],
+        correct:2, concept:"state isolation",
+        exp:"Without isolation, a failed or corrupted step poisons downstream computation. Local errors become global failures. State isolation contains the blast radius — subsequent steps receive uncontaminated input regardless of what failed earlier." },
+    ]
+  },
+  /* ── Module 2: Eps 3-4 ────────────────────────────────────────────── */
+  { id:2, eps:[3,4], title:"Module 2 Quiz", subtitle:"Tool Failures & MCP Layer",
+    questions:[
+      { q:"Which is NOT a responsibility of the MCP manifest?",
+        opts:["Constraining which tools the model can propose","Defining valid parameter schemas per tool","Generating the model's next reasoning step","Specifying error code semantics for tool responses"],
+        correct:2, concept:"manifest as contract",
+        exp:"The manifest constrains tool invocation — it defines the contract for what can be called and with what parameters. The model's reasoning process is entirely separate and outside manifest scope." },
+      { q:"The 'compiler boundary analogy' for MCP enforcement means:",
+        opts:["Prompts are compiled at startup for faster inference","The manifest/RPC layer rejects invalid tool calls regardless of model intent","Tool schemas are compiled into the model's weights during training","Context is pre-processed into a typed AST before reaching the model"],
+        correct:1, concept:"RPC as controlled execution",
+        exp:"Like a compiler rejecting syntactically invalid code regardless of developer intent, RPC enforcement rejects invalid tool calls regardless of what the model intended. Intent is not a contract — the interface specification is." },
+      { q:"A tool returning NOT_FOUND (404) vs UNAVAILABLE (503) must be handled differently because:",
+        opts:["404 requires immediate escalation; 503 is informational only","404 means retry with different args; 503 means retry the same call","404 means the resource doesn't exist (retry is futile); 503 means retry with backoff is correct","Both should be passed to the model to interpret contextually"],
+        correct:2, concept:"status semantics: NOT_FOUND vs UNAVAILABLE",
+        exp:"NOT_FOUND is a semantic error — the target doesn't exist, retrying with the same arguments won't help. UNAVAILABLE is a transient infrastructure issue — the same call may succeed after a delay. Treating them the same produces either futile retries or missed recoveries." },
+      { q:"Schema validation as a pre-execution gate means:",
+        opts:["The model validates its own outputs before returning them","Tool arguments are checked against the schema before the tool is invoked","The schema is embedded in context for reference during generation","Validation occurs after tool results are received and parsed"],
+        correct:1, concept:"schema validation as pre-execution gate",
+        exp:"The gate runs before execution. Invalid arguments are rejected without invoking the tool — no side effects, no wasted call budget. This is the correct enforcement point: before any external system is touched." },
+      { q:"When a model constructs syntactically valid but semantically wrong tool arguments (e.g., a valid-format but non-existent entity ID), the correct safeguard is:",
+        opts:["Schema validation catches and rejects the call before invocation","Claude.md policy intercepts the semantically invalid argument","The tool's NOT_FOUND response is handled by control flow, not re-fed to the model as context","The retry controller auto-generates a corrected argument"],
+        correct:2, concept:"tool selection failures",
+        exp:"Schema validation checks structure, not semantics. Semantic errors surface as tool error responses (NOT_FOUND). These must be handled by control flow logic — routing to retry, fallback, or escalation — not passed back to the model as data it interprets as content." },
+    ]
+  },
+  /* ── Module 3: Eps 5-6 ────────────────────────────────────────────── */
+  { id:3, eps:[5,6], title:"Module 3 Quiz", subtitle:"Policy & Control Layers",
+    questions:[
+      { q:"The key distinction between Claude.md and a task-level system prompt is:",
+        opts:["Claude.md is stored externally while prompts are in-context","Claude.md encodes epistemic policy — how to reason — rather than task instructions","System prompts are processed before Claude.md at inference time","Claude.md controls output format; prompts control tool selection"],
+        correct:1, concept:"Claude.md as policy not prompt",
+        exp:"Claude.md is epistemic policy: what counts as valid evidence, valid inference, valid output structure. It's not instructions for a task. It governs how the model reasons about any task — the invariants that apply universally." },
+      { q:"Retry logic belongs in Skill.md, not Claude.md, because:",
+        opts:["Claude.md lacks capacity to hold procedural instructions","Retry is task-specific behavior, not a universal epistemic rule","Skill.md is processed closer to execution time","Claude.md cannot reference external tool schemas directly"],
+        correct:1, concept:"retry in Skill.md not Claude.md",
+        exp:"Claude.md holds invariant cognitive policy — rules that apply universally regardless of task. Retry behavior depends on the specific tool, task latency tolerance, and acceptable fallbacks. It's procedure, not policy. It belongs in the playbook, not the constitution." },
+      { q:"The 'constitution vs playbook' analogy maps to:",
+        opts:["Planner agents vs executor agents in hub-and-spoke","Batch processing vs streaming execution modes","Claude.md (invariant principles) vs Skill.md (task-specific procedures)","Safety constraints vs capability constraints"],
+        correct:2, concept:"constitution vs playbook analogy",
+        exp:"A constitution defines non-negotiable principles that apply universally. A playbook defines plays for specific situations. Claude.md = constitution (epistemic invariants). Skill.md = playbook (how to run this particular task). The separation enables independent maintenance." },
+      { q:"Output structure enforcement in Claude.md is best described as:",
+        opts:["Prompting the model to use markdown formatting throughout","Running JSON schema validation post-generation","A policy requirement that outputs be structured to make reasoning traceable and auditable","Reformatting tool outputs before they reach the model"],
+        correct:2, concept:"output structure enforcement",
+        exp:"Structure as policy means: outputs must be structured so that failures are detectable and reasoning is auditable. This is an epistemic requirement, not a formatting preference. It makes the system's behavior inspectable after the fact." },
+      { q:"The failure mode of placing task-specific procedures in Claude.md is:",
+        opts:["Procedures overwrite policy, creating unpredictable precedence","Task-specific logic becomes universal, eliminating per-task customization","Claude.md grows too large, causing context window overflow","Policy becomes dependent on task state, breaking stateless design"],
+        correct:1, concept:"cognitive vs procedural separation",
+        exp:"If Tool A's retry logic lives in Claude.md, it applies to every task — including tasks where that retry behavior is wrong. Task procedures in policy-layer documents destroy the separation that makes each layer independently auditable and maintainable." },
+    ]
+  },
+  /* ── Module 4: Eps 7-8 ────────────────────────────────────────────── */
+  { id:4, eps:[7,8], title:"Module 4 Quiz", subtitle:"Hub-and-Spoke Architecture",
+    questions:[
+      { q:"In hub-and-spoke architecture, the hub's primary role is:",
+        opts:["Executing all computation to avoid agent synchronization overhead","Routing tasks and validating spoke results — not direct execution","Providing shared memory storage accessible to all spoke agents","Directly interfacing with external tools and APIs"],
+        correct:1, concept:"hub as planner not executor",
+        exp:"Hub = planner + validator, not executor. It decomposes goals, routes to spokes, and validates results. Moving execution into the hub creates a single point of failure and defeats the purpose of distribution." },
+      { q:"'All communication through hub' prevents which failure mode most directly?",
+        opts:["Attention dilution in long hub context windows","Hidden state contamination between spokes","Schema validation bypasses in direct tool calls","Over-decomposition of naturally atomic tasks"],
+        correct:1, concept:"all communication through hub",
+        exp:"Direct spoke-to-spoke communication creates hidden state dependencies invisible to the hub. Hub mediation makes all state changes observable and validatable — preserving the hub's ability to detect and isolate cascading failures before they compound." },
+      { q:"Unbounded loops in multi-agent systems most often result from:",
+        opts:["Insufficient context window in the hub agent","Missing or ambiguous termination criteria in goal decomposition","Schema validation failing on all retry attempts","Conflicting Claude.md policies between spoke agents"],
+        correct:1, concept:"unbounded loops",
+        exp:"Without explicit, checkable termination criteria, goal-directed agents will retry indefinitely if their success condition is never met or can't be verified. Termination criteria must be as concrete and mechanically verifiable as the goal itself." },
+      { q:"Error amplification in multi-agent systems describes:",
+        opts:["API latency increasing non-linearly with agent concurrency","Individual agent errors compounding through inter-agent dependencies","Computational cost scaling super-linearly with agent count","State contamination being harder to detect than direct tool failures"],
+        correct:1, concept:"error amplification",
+        exp:"Error in agent A degrades agent B's input quality, which degrades agent C's — compounding multiplicatively, not additively. This is why validation at each inter-agent boundary is non-negotiable: you prevent local errors from becoming global failures." },
+      { q:"'Spoke specification as contract' means:",
+        opts:["Spokes must acknowledge outputs before returning them to the hub","Each spoke has precise input/output schemas that the hub enforces at the boundary","Spoke agents negotiate task allocation dynamically through the hub","Spokes can only invoke tools listed in the hub's manifest"],
+        correct:1, concept:"spoke specification as contract",
+        exp:"The spec defines what inputs a spoke accepts and what outputs it guarantees. This enables the hub to validate spoke outputs without understanding the spoke's internals — analogous to an API contract. Validation is against the spec, not the implementation." },
+    ]
+  },
+  /* ── Module 5: Eps 9-10 ───────────────────────────────────────────── */
+  { id:5, eps:[9,10], title:"Module 5 Quiz", subtitle:"Goal Decomposition & State",
+    questions:[
+      { q:"'Single responsible agent per step' primarily ensures:",
+        opts:["Context window stays within budget during complex tasks","Clear failure attribution — any error has one accountable source","No duplicate tool calls from concurrent agents","Reduced schema validation overhead per decomposed step"],
+        correct:1, concept:"single responsible agent per step",
+        exp:"Shared ownership of a step means distributed blame when it fails. Single ownership makes failures traceable: you know which agent failed, what its inputs were, and why its output was wrong. This is the basis of a debuggable system." },
+      { q:"The primary criterion for distinguishing safe vs unsafe caching is:",
+        opts:["The size of the cached value relative to available memory","Whether the data changes faster than the cache TTL","Whether the cache is shared across agents or agent-local","Whether the cached value passed schema validation"],
+        correct:1, concept:"safe vs unsafe caching",
+        exp:"Caching is safe only if the underlying reality hasn't changed since the value was cached. TTL must be calibrated to the data's actual rate of change. Caching ephemeral data (slot availability, live prices) is unsafe regardless of value size or validation status." },
+      { q:"'Validated-data-only memory' means:",
+        opts:["Memory entries are encrypted and access-controlled","Only outputs that passed validation enter the agent's memory store","Memory is validated on each read, not just on write","The model explicitly confirms each memory entry before storage"],
+        correct:1, concept:"validated-data-only memory",
+        exp:"Unvalidated outputs in memory propagate errors silently through subsequent steps. The memory store is a source of ground truth for downstream agents — only data that passed structural and semantic checks should enter it, or you've built a hallucination amplifier." },
+      { q:"Dependency mapping in goal decomposition determines:",
+        opts:["Which agent is computationally fastest for a given sub-task","Which steps can run in parallel and which must be sequential","How many tokens each step will require in the context window","Which tools each spoke agent is authorized to invoke"],
+        correct:1, concept:"dependency mapping",
+        exp:"Without dependency mapping, you might parallelize steps with data dependencies — producing agents that operate on incomplete or stale inputs. The dependency graph defines the valid execution order and prevents race conditions in distributed goal execution." },
+      { q:"The correct recovery sequence when a cached value appears stale is:",
+        opts:["Fallback to degraded mode → Retry fresh fetch → Escalate","Retry fresh fetch → Fallback to degraded mode → Escalate","Escalate immediately to preserve data integrity","Use stale data with a confidence penalty applied to the output"],
+        correct:1, concept:"recovery: retry vs fallback vs escalation",
+        exp:"Attempt to resolve first (fresh fetch). If unavailable, degrade gracefully. Escalate only if degradation is also unacceptable. Escalating immediately is costly; using stale data silently is dangerous. The hierarchy reflects increasing cost of each option." },
+    ]
+  },
+  /* ── Module 6: Eps 11-12 ──────────────────────────────────────────── */
+  { id:6, eps:[11,12], title:"Module 6 Quiz", subtitle:"Context Window & Determinism",
+    questions:[
+      { q:"'Context as computation surface with a quota' implies:",
+        opts:["Context windows are billed per token, imposing cost pressure","Every token of context consumes finite attention — more context doesn't mean better performance","The model uses context as a queryable database","Context window limits cap the number of tool calls per turn"],
+        correct:1, concept:"context as computation surface",
+        exp:"Attention is finite and distributed across all tokens. Adding more context beyond a point doesn't improve performance — it dilutes signal. Important information buried in a large context may effectively be invisible to the model despite being present." },
+      { q:"The correct order of context management operations is:",
+        opts:["Select → Compress → Retrieve","Retrieve → Compress → Select","Compress → Retrieve → Select","Retrieve → Select → Compress"],
+        correct:1, concept:"retrieval → compression → selection",
+        exp:"First retrieve relevant data from storage (broad set), then compress it to remove low-signal content (reduce volume), then select the highest-value subset for the actual context window (prioritize). Compressing before retrieval is premature; selecting before compression is wasteful." },
+      { q:"Cross-agent agreement in validation increases confidence because:",
+        opts:["Agreement forces agents to use identical context content","Independent probabilistic processes converging on the same output is Bayesian evidence against hallucination","Agreement eliminates the need for downstream schema validation","Agreeing agents can be cached to avoid redundant computation"],
+        correct:1, concept:"cross-agent agreement",
+        exp:"Two independent stochastic processes producing the same output is evidence the output reflects genuine signal rather than random model behavior. Divergence, conversely, is information — it signals source ambiguity or underspecified element definitions that need tightening." },
+      { q:"Over-compression of context is dangerous because:",
+        opts:["Decompression overhead increases inference latency","Compressed context cannot contain tool schemas","Grounding is lost — the model fills gaps with inference rather than evidence","Compression prevents the hub from validating spoke outputs"],
+        correct:2, concept:"over-compression vs overloading",
+        exp:"Compression trades completeness for relevance. Too aggressive, and grounding information is removed — the model fills gaps with plausible inference rather than source-traceable content. Hallucination increases precisely because the model has less to contradict its priors." },
+      { q:"Intermediate structure as determinism means:",
+        opts:["Deterministic behavior requires JSON throughout the entire pipeline","Imposing semantic structure mid-pipeline creates checkpoints that constrain subsequent steps","Determinism is only achievable in batch processing, not streaming","All intermediate steps must use the same schema as the final output"],
+        correct:1, concept:"intermediate structure as determinism",
+        exp:"Structured intermediate checkpoints — even informal semantic contracts — reduce variance in how subsequent steps interpret prior outputs. They act as local invariants that prevent error and ambiguity from propagating forward through the pipeline." },
+    ]
+  },
+  /* ── Module 7: Eps 13-14 ──────────────────────────────────────────── */
+  { id:7, eps:[13,14], title:"Module 7 Quiz", subtitle:"Elements & Goal Prediction",
+    questions:[
+      { q:"The minimum sufficient element definition for a risk extraction task is:",
+        opts:["Title, owner, severity, and probability score","Category, subcategory, description, and mitigation steps","Cause and impact","Impact, probability, and time horizon"],
+        correct:2, concept:"risk = cause + impact minimum",
+        exp:"Cause + impact is the minimum that makes a risk actionable. Any additional field must pass the test: 'can someone act on this output without this field?' If yes, the field is optional, not required. Over-specification increases failure rate without increasing usefulness." },
+      { q:"Elements are defined in Skill.md rather than by the model because:",
+        opts:["Skill.md has processing priority over model context","Element definition is a design decision, not an extraction task","The model cannot understand semantic definitions at runtime","Skill.md undergoes schema validation before execution"],
+        correct:1, concept:"Skill.md defines elements not model",
+        exp:"What constitutes a valid risk element is a product decision about what's actionable. Leaving it to the model introduces run-to-run inconsistency. Element definitions belong in design artifacts (Skill.md) where they can be reviewed, versioned, and enforced deterministically." },
+      { q:"Presence must be enforced before accuracy because:",
+        opts:["Presence checks are computationally cheaper than accuracy checks","You cannot evaluate the quality of a field that doesn't exist","The model always produces present-but-wrong output before absent output","Accuracy checks require external validation services unavailable at runtime"],
+        correct:1, concept:"presence enforcement before accuracy",
+        exp:"Trivially: you cannot ask 'is the cause field correct?' if there is no cause field. Structural completeness gates quality assessment — attempting quality evaluation on absent elements is undefined behavior that produces misleading results." },
+      { q:"'Wrong classification failure mode' in goal prediction occurs when:",
+        opts:["The hub assigns too many spokes to a single goal","A goal is classified into the wrong category, causing wrong element templates to be applied downstream","The model fails to decompose abstract goals into concrete sub-tasks","Element templates from different goal classes conflict within Skill.md"],
+        correct:1, concept:"wrong classification failure mode",
+        exp:"Goal class determines which element template applies. Misclassification produces structurally valid outputs with semantically irrelevant elements — the system looks correct but extracts the wrong things entirely. The error is invisible without domain knowledge." },
+      { q:"Goal-to-element mapping belongs in Skill.md because:",
+        opts:["Element schemas are too large for Claude.md's context budget","Mapping is task-specific: different extraction tasks require different element structures","Goal classification is a universal epistemic rule covered by Claude.md","Hub agents require direct file system access to Skill.md at runtime"],
+        correct:1, concept:"element templates in Skill.md",
+        exp:"Different tasks need different elements. Contract analysis needs different structure than risk analysis or requirement extraction. This is task-specific procedure — the playbook, not the constitution. Universal goal taxonomy belongs in Claude.md; task-specific mappings belong in Skill.md." },
+    ]
+  },
+  /* ── Module 8: Eps 15-16 ──────────────────────────────────────────── */
+  { id:8, eps:[15,16], title:"Module 8 Quiz", subtitle:"Schemas & Validation",
+    questions:[
+      { q:"The design test for whether a field belongs in the required schema set is:",
+        opts:["Can this field be populated by the model without external tool calls?","If this field is absent, can someone still act on the output?","Is this field present in more than half of expected inputs?","Can this field be derived from other required fields at read time?"],
+        correct:1, concept:"minimal schema design",
+        exp:"'If this field is absent, can someone still act on the output?' — if yes, the field is optional, not required. Required means strictly necessary for usefulness. Everything else is over-specification that increases extraction failure rate without improving actionability." },
+      { q:"Over-specifying a schema primarily causes:",
+        opts:["Increased inference cost for extraction runs","Higher extraction failure rate — more required fields means more failure points","Slower validation due to more fields to check","Ambiguous goal classification at the hub level"],
+        correct:1, concept:"over-specifying schema failure mode",
+        exp:"Every required field is a failure point. If any required field is absent, the entire output is invalid. Over-specification increases the probability that at least one required field will fail to extract — producing more rejections without producing more useful outputs." },
+      { q:"In the five-layer validation funnel, the ONLY fully deterministic layer is:",
+        opts:["Semantic completeness","Grounding validation","Structural validation (field presence check)","Cross-pass agreement scoring"],
+        correct:2, concept:"five-layer validation funnel",
+        exp:"Structural validation — is the field present and non-empty? — requires no model, no domain knowledge, no interpretation. It's a pure existence check. All subsequent layers (semantic completeness, consistency, grounding, cross-pass) require increasing degrees of judgment and are probabilistic." },
+      { q:"When two extraction passes produce different outputs for the same input, the correct response is:",
+        opts:["Use the second pass — it incorporates context from the first","Collapse to the majority answer if running more than two passes","Treat divergence as a signal of genuine ambiguity or underspecified elements","Reject the output and re-queue the input with a stricter prompt"],
+        correct:2, concept:"cross-pass validation",
+        exp:"Disagreement between independent passes is information, not failure. It means either the source is genuinely ambiguous, or the element definition is underspecified. The correct response is to surface the disagreement explicitly with confidence levels — not collapse it to a false single answer." },
+      { q:"'Reliable systems approximate truth through structured, staged validation' implies:",
+        opts:["Perfect validation is achievable with enough pipeline stages","The system's goal is to manage and represent uncertainty explicitly, not eliminate it","Unstructured outputs are inherently unsuitable for production use","Cross-pass validation eventually converges to ground truth with enough passes"],
+        correct:1, concept:"presence vs accuracy",
+        exp:"The system cannot guarantee truth — only make confidence levels explicit and traceable. Downstream systems then act on confidence-annotated outputs. Trying to eliminate uncertainty rather than manage it produces brittle systems that fail silently when they inevitably encounter genuine ambiguity." },
+    ]
+  },
+];
+
+/* ─── Build sidebar ────────────────────────────────────────────────────── */
+function buildSidebar() {
+  const list = document.getElementById('ep-list');
+  list.innerHTML = '';
+  for (let i = 0; i < 8; i++) {
+    const ep1 = EPISODES[i * 2];
+    const ep2 = EPISODES[i * 2 + 1];
+    const quiz = QUIZ_DATA[i];
+
+    // Module header
+    const hdr = document.createElement('div');
+    hdr.className = 'module-header';
+    hdr.textContent = `Module ${i + 1}`;
+    list.appendChild(hdr);
+
+    list.appendChild(makeEpItem(ep1));
+    list.appendChild(makeEpItem(ep2));
+    list.appendChild(makeQuizItem(quiz));
+  }
+}
+
+function makeEpItem(ep) {
+  const d = document.createElement('div');
+  d.className = 'ep-item' + (played[ep.num] ? ' played' : '');
+  d.id = 'ep-' + ep.num;
+  d.innerHTML = `
     <div class="ep-num">${String(ep.num).padStart(2,'0')}</div>
     <div class="ep-info">
       <div class="ep-name">${ep.title}</div>
@@ -637,63 +692,346 @@ EPISODES.forEach(ep => {
       </div>
     </div>
     <div class="check-icon">✓</div>`;
-  div.onclick = () => loadEp(ep);
-  list.appendChild(div);
-});
+  d.onclick = () => loadEp(ep);
+  return d;
+}
 
+function makeQuizItem(quiz) {
+  const d = document.createElement('div');
+  d.id = 'quiz-sb-' + quiz.id;
+  const bothPlayed  = quiz.eps.every(n => played[n]);
+  const completed   = !!quizState[quiz.id];
+  let cls = 'quiz-item';
+  if (!bothPlayed) cls += ' locked';
+  else if (completed) cls += ' completed';
+
+  // Icon
+  const iconSvg = !bothPlayed
+    ? `<svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M9 5V4a3 3 0 10-6 0v1H2v7h8V5H9zm-5-1a2 2 0 114 0v1H4V4z"/></svg>`
+    : completed
+      ? `<svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M10 3L5 8.5 2 5.5 3 4.5l2 2L9 2l1 1z"/></svg>`
+      : `<svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 1a5 5 0 100 10A5 5 0 006 1zM5 3.5h2v4H5v-4zm0 5h2v1H5v-1z"/></svg>`;
+
+  let right = '';
+  if (completed) {
+    const sc = quizState[quiz.id].score, tot = quiz.questions.length;
+    const c = sc === tot ? 'var(--accent)' : sc >= Math.ceil(tot*.6) ? 'var(--warn)' : 'var(--danger)';
+    right = `<span class="score-pill" style="background:${c}22;color:${c}">${sc}/${tot}</span>`;
+  }
+
+  const sub = !bothPlayed
+    ? `Complete Ep ${quiz.eps[0]} & ${quiz.eps[1]} first`
+    : completed ? `${quiz.subtitle} · Retake` : quiz.subtitle;
+
+  d.className = cls;
+  d.innerHTML = `
+    <div class="quiz-icon">${iconSvg}</div>
+    <div class="quiz-info">
+      <div class="quiz-name">${quiz.title}</div>
+      <div class="quiz-sub">${sub}</div>
+    </div>${right}`;
+
+  if (bothPlayed) d.onclick = () => loadQuiz(quiz);
+  return d;
+}
+
+function refreshQuizSidebar(quizId) {
+  const quiz = QUIZ_DATA[quizId - 1];
+  const old = document.getElementById('quiz-sb-' + quizId);
+  if (old) old.replaceWith(makeQuizItem(quiz));
+}
+
+/* ─── Episode loading ──────────────────────────────────────────────────── */
 function loadEp(ep) {
   currentEp = ep;
-  document.querySelectorAll('.ep-item').forEach(el => el.classList.remove('active'));
-  const item = document.getElementById('ep-' + ep.num);
-  if (item) { item.classList.add('active'); item.scrollIntoView({ block: 'nearest' }); }
+  setActive('ep', ep.num);
 
   audio.src = ep.file;
   audio.playbackRate = SPEEDS[speedIdx];
   audio.play().catch(() => {});
 
-  document.getElementById('topbar-title').textContent = 'EP ' + String(ep.num).padStart(2,'0') + ' — ' + ep.title;
-  document.getElementById('player-ep-name').innerHTML = `<strong>EP ${String(ep.num).padStart(2,'0')}</strong> — ${ep.title}`;
+  document.getElementById('topbar-title').textContent = `EP ${String(ep.num).padStart(2,'0')} — ${ep.title}`;
+  document.getElementById('pname').innerHTML = `<strong>EP ${String(ep.num).padStart(2,'0')}</strong> — ${ep.title}`;
+  renderEpPanel(ep);
+}
 
-  // Main panel
-  const tagHTML = `<span class="tag" style="background:${ep.tagBg};color:${ep.tagColor};font-size:11px;padding:3px 10px">${ep.tag}</span>`;
-  const chipsHTML = ep.concepts.map(c => `<span class="chip">${c}</span>`).join('');
-  const prevDis = ep.num === 1 ? 'disabled' : '';
-  const nextDis = ep.num === 16 ? 'disabled' : '';
+function renderEpPanel(ep) {
+  const pairIdx    = Math.floor((ep.num - 1) / 2);
+  const quiz       = QUIZ_DATA[pairIdx];
+  const quizReady  = quiz.eps.every(n => played[n]);
+  const quizDone   = !!quizState[quiz.id];
+
+  const tagHtml   = `<span class="tag" style="background:${ep.tagBg};color:${ep.tagColor};font-size:11px;padding:3px 10px">${ep.tag}</span>`;
+  const chipsHtml = ep.concepts.map(c => `<span class="chip">${c}</span>`).join('');
+  const prevDis   = ep.num === 1  ? 'disabled' : '';
+  const nextDis   = ep.num === 16 ? 'disabled' : '';
+
+  let quizBtnHtml = '';
+  if (quizReady && !quizDone) {
+    quizBtnHtml = `<div style="margin-top:10px"><button class="nav-btn quiz-cta" style="width:100%" onclick="loadQuiz(QUIZ_DATA[${pairIdx}])">📝 Take ${quiz.title} →</button></div>`;
+  } else if (quizDone) {
+    const sc = quizState[quiz.id].score, tot = quiz.questions.length;
+    quizBtnHtml = `<div style="margin-top:10px"><button class="nav-btn" style="width:100%;opacity:.7" onclick="loadQuiz(QUIZ_DATA[${pairIdx}])">✓ ${quiz.title} — ${sc}/${tot} · Review</button></div>`;
+  }
 
   document.getElementById('main-panel').innerHTML = `
-    <div class="now-playing-tag">▶ Now playing</div>
+    <div class="ep-label">▶ Now playing</div>
     <div class="ep-big-num">${String(ep.num).padStart(2,'0')}</div>
     <div class="ep-big-title">${ep.title}</div>
-    <div class="ep-tag-row">
-      ${tagHTML}
-      <span class="ep-duration-badge">${ep.duration}</span>
-    </div>
+    <div class="ep-tag-row">${tagHtml}<span class="ep-dur">${ep.duration}</span></div>
     <div class="concepts-block">
       <div class="concepts-label">Key concepts</div>
-      <div class="concept-chips">${chipsHTML}</div>
+      <div class="concept-chips">${chipsHtml}</div>
     </div>
     <div class="nav-row">
       <button class="nav-btn" onclick="prevEp()" ${prevDis}>← Previous</button>
       <button class="nav-btn primary" onclick="togglePlay()">Play / Pause</button>
       <button class="nav-btn" onclick="nextEp()" ${nextDis}>Next →</button>
-    </div>`;
+    </div>
+    ${quizBtnHtml}
+    <div style="height:32px"></div>`;
 }
 
+/* ─── Quiz loading ─────────────────────────────────────────────────────── */
+function loadQuiz(quiz, forceNew = false) {
+  activeQuiz    = quiz;
+  quizAnswers   = {};
+  quizSubmitted = false;
+  setActive('quiz', quiz.id);
+  document.getElementById('topbar-title').textContent = `${quiz.title} — ${quiz.subtitle}`;
+  document.getElementById('pname').innerHTML = `<strong>${quiz.title}</strong> — ${quiz.subtitle}`;
+
+  if (!forceNew && quizState[quiz.id]) {
+    showResults(quiz, quizState[quiz.id].answers);
+    return;
+  }
+  renderQuizPanel(quiz);
+}
+
+function renderQuizPanel(quiz) {
+  const qBlocks = quiz.questions.map((q, i) => `
+    <div class="q-block" id="qb-${i}">
+      <div class="q-num">Q${i+1} / ${quiz.questions.length} &nbsp;·&nbsp; <span style="color:var(--faint)">${q.concept}</span></div>
+      <div class="q-text">${q.q}</div>
+      <div class="opts" id="opts-${i}">
+        ${q.opts.map((o, j) => `
+          <button class="opt-btn" id="opt-${i}-${j}" onclick="selectAnswer(${i},${j})">
+            <span class="opt-letter">${'ABCD'[j]}</span><span>${o}</span>
+          </button>`).join('')}
+      </div>
+      <div class="exp-box" id="exp-${i}"></div>
+    </div>`).join('');
+
+  document.getElementById('main-panel').innerHTML = `
+    <div class="quiz-label">📝 ${quiz.title}</div>
+    <div class="quiz-big-title">${quiz.subtitle}</div>
+    <div class="quiz-sub-text">Episodes ${quiz.eps[0]} &amp; ${quiz.eps[1]} &nbsp;·&nbsp; ${quiz.questions.length} questions &nbsp;·&nbsp; Select one answer per question</div>
+    ${qBlocks}
+    <div class="quiz-footer">
+      <div class="quiz-prog" id="quiz-prog">0 / ${quiz.questions.length} answered</div>
+      <button class="nav-btn primary" style="flex:none;padding:9px 24px" id="submit-btn" onclick="submitQuiz()" disabled>Submit Quiz</button>
+    </div>
+    <div style="height:40px"></div>`;
+}
+
+function selectAnswer(qi, oi) {
+  if (quizSubmitted) return;
+  quizAnswers[qi] = oi;
+  const q = activeQuiz.questions[qi];
+  for (let j = 0; j < q.opts.length; j++) {
+    document.getElementById(`opt-${qi}-${j}`).classList.toggle('selected', j === oi);
+  }
+  const answered = Object.keys(quizAnswers).length;
+  document.getElementById('quiz-prog').textContent = `${answered} / ${activeQuiz.questions.length} answered`;
+  document.getElementById('submit-btn').disabled = answered < activeQuiz.questions.length;
+}
+
+function submitQuiz() {
+  if (!activeQuiz) return;
+  quizSubmitted = true;
+  const quiz = activeQuiz;
+  let score = 0;
+
+  quiz.questions.forEach((q, i) => {
+    const sel  = quizAnswers[i];
+    const ok   = sel === q.correct;
+    if (ok) score++;
+
+    document.getElementById(`qb-${i}`).classList.add(ok ? 'correct' : 'wrong');
+    for (let j = 0; j < q.opts.length; j++) {
+      const b = document.getElementById(`opt-${i}-${j}`);
+      b.disabled = true;
+      b.classList.remove('selected');
+      if (j === q.correct)         b.classList.add('reveal-correct');
+      else if (j === sel && !ok)   b.classList.add('reveal-wrong');
+    }
+    const eb = document.getElementById(`exp-${i}`);
+    eb.textContent = q.exp;
+    eb.classList.add('show', ok ? 'exp-correct' : 'exp-wrong');
+  });
+
+  quizState[quiz.id] = { score, answers: { ...quizAnswers } };
+  localStorage.setItem('cca-quizzes', JSON.stringify(quizState));
+  document.getElementById('stat-quizzes').textContent = Object.keys(quizState).length;
+  refreshQuizSidebar(quiz.id);
+  refreshCertSidebar();
+
+  // Update footer
+  document.getElementById('quiz-prog').textContent = `Score: ${score} / ${quiz.questions.length}`;
+  const sb = document.getElementById('submit-btn');
+  sb.textContent = 'View Full Results →';
+  sb.disabled = false;
+  sb.onclick = () => showResults(quiz, quizAnswers);
+  setTimeout(() => sb.scrollIntoView({ behavior: 'smooth', block: 'center' }), 350);
+}
+
+/* ─── Results & lesson ─────────────────────────────────────────────────── */
+async function showResults(quiz, answers) {
+  const score   = quiz.questions.filter((q, i) => answers[i] === q.correct).length;
+  const missed  = quiz.questions.filter((q, i) => answers[i] !== q.correct);
+  const perfect = score === quiz.questions.length;
+  const scoreC  = perfect ? 'var(--accent)' : score >= 3 ? 'var(--warn)' : 'var(--danger)';
+  const verdict = perfect ? '✓ PERFECT' : score >= 3 ? '✓ PASS' : '✗ NEEDS REVIEW';
+
+  const nextEpNum = quiz.eps[1] + 1;
+  const hasNext   = nextEpNum <= 16;
+  const nextBtn   = hasNext
+    ? `<button class="nav-btn primary" onclick="loadEp(EPISODES[${nextEpNum - 1}])">Next: EP ${String(nextEpNum).padStart(2,'0')} →</button>`
+    : `<button class="nav-btn" disabled>Series Complete ✓</button>`;
+
+  // Show certificate block if all 8 quizzes are done (checked after this quiz saves)
+  const certBlock = allQuizzesComplete() ? `
+    <div class="cert-complete-banner">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#a78bfa" stroke-width="1.5"/><path d="M6 10l3 3 5-5" stroke="#a78bfa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div class="cert-complete-text">
+        <strong>🎓 All 8 modules complete</strong>
+        Download your knowledge profile certificate. Paste it into Claude.ai or Claude Desktop to generate a personalised study plan targeting your exact gaps — no context-setting required.
+      </div>
+    </div>
+    <div style="margin-bottom:20px">
+      <button class="cert-result-btn" onclick="downloadCertificate()">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 12l-4-4h2.5V4h3v4H12L8 12zm-5 2h10v1.5H3V14z"/></svg>
+        Download Certificate &amp; Claude Prompt
+      </button>
+    </div>` : '';
+
+  const missedHtml = missed.length ? `
+    <div class="missed-section">
+      <div class="missed-section-label">Missed concepts (${missed.length})</div>
+      ${missed.map(q => `
+        <div class="missed-item">
+          <div class="missed-concept">${q.concept}</div>
+          <div class="missed-q">${q.q}</div>
+          <div class="missed-ans">✓ ${q.opts[q.correct]}</div>
+          <div class="missed-exp">${q.exp}</div>
+        </div>`).join('')}
+    </div>` : '';
+
+  document.getElementById('main-panel').innerHTML = `
+    <div class="quiz-label">Results — ${quiz.title}</div>
+    <div class="results-score-row">
+      <div class="score-big" style="color:${scoreC}">${score}</div>
+      <div class="score-denom">/ ${quiz.questions.length}</div>
+    </div>
+    <div class="score-verdict">${verdict}</div>
+    ${perfect ? `<div class="perfect-banner">All concepts from Episodes ${quiz.eps[0]} &amp; ${quiz.eps[1]} are solid. Move on with confidence.</div>` : ''}
+    ${certBlock}
+    <div class="lesson-card">
+      <div class="lesson-card-label">Personalized Lesson</div>
+      <div id="lesson-content"><div class="lesson-loading"><div class="spinner"></div><span>Generating lesson…</span></div></div>
+    </div>
+    ${missedHtml}
+    <div class="nav-row" style="margin-top:24px">
+      <button class="nav-btn" onclick="loadQuiz(QUIZ_DATA[${quiz.id - 1}], true)">Retake Quiz</button>
+      ${nextBtn}
+    </div>
+    <div style="height:40px"></div>`;
+
+  await generateLesson(quiz, missed, score, answers);
+}
+
+async function generateLesson(quiz, missed, score, answers) {
+  const el = document.getElementById('lesson-content');
+  if (!el) return;
+
+  // Cache hit
+  if (quizState[quiz.id]?.lesson) {
+    el.innerHTML = `<div class="lesson-body">${quizState[quiz.id].lesson}</div><div class="lesson-source">Cached</div>`;
+    return;
+  }
+
+  if (score === quiz.questions.length) {
+    const txt = `Perfect score — no gaps to address. All concepts from Episodes ${quiz.eps[0]} and ${quiz.eps[1]} are clear. Continue to Module ${Math.min(quiz.id + 1, 8)}.`;
+    el.innerHTML = `<div class="lesson-body">${txt}</div>`;
+    saveLesson(quiz.id, txt);
+    return;
+  }
+
+  // Try Anthropic API
+  if (apiKey) {
+    try {
+      const missedSummary = missed.map(q =>
+        `• Concept: ${q.concept}\n  Q: ${q.q}\n  Correct answer: ${q.opts[q.correct]}\n  Explanation: ${q.exp}`
+      ).join('\n');
+
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 450,
+          system: 'You are a concise CCA (Claude Certified Architect) exam prep instructor. Generate a focused 150–200 word remedial lesson targeting ONLY the student\'s weak areas. Be direct and technical. Use concrete examples. Lead with the core corrective insight. No preamble, no sign-off.',
+          messages: [{ role: 'user', content: `Quiz: ${quiz.title} — ${quiz.subtitle}\nScore: ${score}/${quiz.questions.length}\n\nMissed concepts:\n${missedSummary}\n\nWrite a cohesive remedial lesson that directly addresses these gaps.` }]
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const text = data.content?.[0]?.text || '';
+        if (text) {
+          const html = text.split('\n\n').map(p => `<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
+          el.innerHTML = `<div class="lesson-body">${html}</div><div class="lesson-source">AI-generated · claude-haiku</div>`;
+          saveLesson(quiz.id, html);
+          return;
+        }
+      }
+    } catch (_) { /* fall through */ }
+  }
+
+  // Local fallback: synthesize from explanations
+  const parts = missed.map(q =>
+    `<p><strong>${q.concept}:</strong> ${q.exp}</p>`
+  ).join('');
+  const src = apiKey ? 'API unavailable — local fallback' : 'Local · Set API key in ⚙ for AI-generated lessons';
+  el.innerHTML = `<div class="lesson-body">${parts}</div><div class="lesson-source">${src}</div>`;
+  saveLesson(quiz.id, parts);
+}
+
+function saveLesson(quizId, html) {
+  if (!quizState[quizId]) return;
+  quizState[quizId].lesson = html;
+  localStorage.setItem('cca-quizzes', JSON.stringify(quizState));
+}
+
+/* ─── Audio player ─────────────────────────────────────────────────────── */
 function togglePlay() {
   if (!currentEp) { loadEp(EPISODES[0]); return; }
   if (audio.paused) audio.play(); else audio.pause();
 }
 
 function setPlayIcon() {
-  const paused = audio.paused;
-  playIcon.innerHTML = paused
+  document.getElementById('play-icon').innerHTML = audio.paused
     ? '<path d="M3 2l10 5-10 5V2z"/>'
     : '<path d="M3 2h3v10H3V2zm7 0h3v10h-3V2z"/>';
 }
-audio.addEventListener('play', setPlayIcon);
+audio.addEventListener('play',  setPlayIcon);
 audio.addEventListener('pause', setPlayIcon);
 
-function skip(sec) { audio.currentTime = Math.max(0, audio.currentTime + sec); }
+function skip(s) { audio.currentTime = Math.max(0, audio.currentTime + s); }
 
 function prevEp() {
   if (!currentEp || currentEp.num === 1) return;
@@ -704,77 +1042,390 @@ function nextEp() {
   loadEp(EPISODES[currentEp.num]);
 }
 
+// ── KEY FIX: no auto-advance on episode end ──
 audio.addEventListener('ended', () => {
+  if (!currentEp) return;
   markPlayed(currentEp);
-  if (currentEp && currentEp.num < 16) nextEp();
+  showEndedCard();
 });
 
-function markPlayed(ep) {
-  if (!ep) return;
-  played[ep.num] = true;
-  localStorage.setItem('cca-played', JSON.stringify(played));
-  const item = document.getElementById('ep-' + ep.num);
-  if (item) item.classList.add('played');
-  document.getElementById('stat-played').textContent = Object.keys(played).length;
+function showEndedCard() {
+  if (!currentEp) return;
+  const panel = document.getElementById('main-panel');
+  if (!panel) return;
+  panel.querySelector('.ended-banner')?.remove();
+
+  const pairIdx   = Math.floor((currentEp.num - 1) / 2);
+  const quiz      = QUIZ_DATA[pairIdx];
+  const quizReady = quiz.eps.every(n => played[n]);
+  const quizDone  = !!quizState[quiz.id];
+
+  const banner = document.createElement('div');
+  banner.className = 'ended-banner';
+
+  if (quizReady && !quizDone) {
+    banner.innerHTML = `
+      <div class="ended-text">
+        <strong>Episode complete.</strong>
+        ${quiz.title} is now unlocked — test what you know.
+      </div>
+      <button class="nav-btn quiz-cta" style="flex:none;padding:8px 16px;font-size:12px" onclick="loadQuiz(QUIZ_DATA[${pairIdx}])">Take Quiz →</button>`;
+  } else if (currentEp.num < 16) {
+    banner.innerHTML = `
+      <div class="ended-text">
+        <strong>Episode complete.</strong>
+        Select the next episode to continue.
+      </div>`;
+  } else {
+    banner.innerHTML = `<div class="ended-text"><strong>Series complete.</strong> All 16 episodes done.</div>`;
+  }
+  panel.appendChild(banner);
+
+  // Re-render quiz button if this unlocked the quiz
+  if (quizReady && !quizDone) renderEpPanel(currentEp); // refresh inline quiz CTA too
 }
 
 // Progress bar
 audio.addEventListener('timeupdate', () => {
   if (!audio.duration) return;
   const pct = (audio.currentTime / audio.duration) * 100;
-  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('pfill').style.width = pct + '%';
   document.getElementById('time-cur').textContent = fmt(audio.currentTime);
   document.getElementById('time-dur').textContent = fmt(audio.duration);
   if (audio.currentTime > 30) markPlayed(currentEp);
 });
 
-document.getElementById('progress-bar').addEventListener('click', e => {
-  const rect = e.currentTarget.getBoundingClientRect();
-  const pct = (e.clientX - rect.left) / rect.width;
-  audio.currentTime = pct * audio.duration;
+document.getElementById('pbar').addEventListener('click', e => {
+  const r = e.currentTarget.getBoundingClientRect();
+  audio.currentTime = ((e.clientX - r.left) / r.width) * audio.duration;
 });
 
 function fmt(s) {
   s = Math.floor(s || 0);
-  const m = Math.floor(s / 60), sec = s % 60;
-  return m + ':' + String(sec).padStart(2,'0');
+  return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
 }
 
-function setVol(v) { audio.volume = v; }
+function markPlayed(ep) {
+  if (!ep || played[ep.num]) return;
+  played[ep.num] = true;
+  localStorage.setItem('cca-played', JSON.stringify(played));
+  const el = document.getElementById('ep-' + ep.num);
+  if (el) el.classList.add('played');
+  document.getElementById('stat-played').textContent = Object.keys(played).length;
+
+  // Unlock quiz if both eps in pair are now played
+  const pairIdx = Math.floor((ep.num - 1) / 2);
+  const quiz    = QUIZ_DATA[pairIdx];
+  if (quiz.eps.every(n => played[n])) refreshQuizSidebar(quiz.id);
+}
 
 function cycleSpeed() {
   speedIdx = (speedIdx + 1) % SPEEDS.length;
   audio.playbackRate = SPEEDS[speedIdx];
-  document.getElementById('speed-btn').textContent = SPEEDS[speedIdx] + '×';
+  document.getElementById('spdbtn').textContent = SPEEDS[speedIdx] + '×';
 }
 
-function toggleKbd() {
-  document.getElementById('kbd-hint').classList.toggle('show');
+/* ─── Sidebar active state helper ─────────────────────────────────────── */
+function setActive(type, id) {
+  document.querySelectorAll('.ep-item, .quiz-item').forEach(el => el.classList.remove('active'));
+  if (type === 'ep') {
+    const el = document.getElementById('ep-' + id);
+    if (el) { el.classList.add('active'); el.scrollIntoView({ block: 'nearest' }); }
+  } else {
+    const el = document.getElementById('quiz-sb-' + id);
+    if (el) { el.classList.add('active'); el.scrollIntoView({ block: 'nearest' }); }
+  }
 }
 
-// Init played count
-document.getElementById('stat-played').textContent = Object.keys(played).length;
+/* ─── Certificate ──────────────────────────────────────────────────────── */
 
-// Keyboard shortcuts
+const TIER = (s, t) => {
+  const r = s / t;
+  if (r === 1)   return { label: 'MASTERED',           col: 'var(--accent)',  rank: 4 };
+  if (r >= 0.8)  return { label: 'PROFICIENT',         col: '#34d399',        rank: 3 };
+  if (r >= 0.6)  return { label: 'ADEQUATE',           col: 'var(--warn)',    rank: 2 };
+  return           { label: 'NEEDS REINFORCEMENT',      col: 'var(--danger)',  rank: 1 };
+};
+
+function allQuizzesComplete() {
+  return QUIZ_DATA.every(q => !!quizState[q.id]);
+}
+
+function refreshCertSidebar() {
+  const wrap = document.getElementById('cert-sidebar-wrap');
+  if (!wrap) return;
+  if (!allQuizzesComplete()) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+  wrap.innerHTML = `
+    <div class="cert-sidebar-block">
+      <div class="cert-sb-label">🎓 Series Complete</div>
+      <div class="cert-sb-desc">All 8 modules done. Download your knowledge profile — paste it into Claude.ai or Claude desktop to generate targeted lessons.</div>
+      <button class="cert-dl-btn" onclick="downloadCertificate()">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 12l-4-4h2.5V4h3v4H12L8 12zm-5 2h10v1.5H3V14z"/></svg>
+        Download Certificate
+      </button>
+    </div>`;
+}
+
+function buildClaudePrompt(profile) {
+  const dateStr = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+  const total   = profile.reduce((a, m) => a + m.score, 0);
+  const maxTotal = profile.length * 5;
+  const overall  = TIER(total, maxTotal);
+
+  const moduleRows = profile.map(m =>
+    `| M${m.id} | ${m.subtitle} | ${m.score}/5 | ${TIER(m.score, 5).label} | ${m.missed.length ? m.missed.map(q => q.concept).join('; ') : '—'} |`
+  ).join('\n');
+
+  const gaps = profile
+    .filter(m => m.score < 4)
+    .sort((a, b) => a.score - b.score)
+    .map(m => {
+      const missed = m.missed.map(q => `  - ${q.concept}: ${q.exp.replace(/<[^>]+>/g,'').slice(0,120)}`).join('\n');
+      return `Module ${m.id} — ${m.subtitle} (${m.score}/5)\n${missed}`;
+    }).join('\n\n');
+
+  return `## CCA Architecture — Knowledge Profile
+*Generated ${dateStr} from CCA Exam Prep Series (16 episodes, 8 modules)*
+
+### Overall: ${total}/${maxTotal} — ${overall.label}
+
+### Module Performance
+| Module | Topic | Score | Tier | Missed Concepts |
+|--------|-------|-------|------|-----------------|
+${moduleRows}
+
+### Detailed Gaps
+${gaps || 'None — all modules at Proficient or above.'}
+
+---
+### Instruction for Claude
+
+Based on the knowledge profile above, please:
+
+1. **Prioritised lesson plan**: For each module rated "NEEDS REINFORCEMENT" (≤2/5), write a focused 150-200 word lesson covering the missed concepts with concrete architectural decision examples relevant to the CCA exam. For "ADEQUATE" (3/5) modules, write a 80-100 word targeted review of only the missed concept(s).
+
+2. **Cross-module patterns**: Identify any thematic gaps that appear across multiple modules (e.g., consistent weakness in error semantics, state management, or schema design) and note the exam risk this creates.
+
+3. **Exam priority list**: Given this profile, list the top 3 concepts to solidify before the CCA exam, ordered by exam-impact weight.
+
+4. **Practice questions**: Generate 3 novel MCQ-style questions for the weakest module, formatted with 4 options and an explanation of the correct answer.
+
+Calibrate responses for a technical practitioner preparing for the CCA architect exam — skip definitional basics, focus on architectural tradeoffs and failure modes.`;
+}
+
+function downloadCertificate() {
+  const dateStr   = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+  const profile   = QUIZ_DATA.map(quiz => {
+    const state   = quizState[quiz.id] || {};
+    const answers = state.answers || {};
+    const score   = quiz.questions.filter((q, i) => answers[i] === q.correct).length;
+    const missed  = quiz.questions.filter((q, i) => answers[i] !== q.correct);
+    return { id: quiz.id, title: quiz.title, subtitle: quiz.subtitle, score, missed };
+  });
+
+  const total    = profile.reduce((a, m) => a + m.score, 0);
+  const maxTotal = profile.length * 5;
+  const overall  = TIER(total, maxTotal);
+  const prompt   = buildClaudePrompt(profile);
+
+  const moduleCardsHtml = profile.map(m => {
+    const t      = TIER(m.score, 5);
+    const pct    = Math.round((m.score / 5) * 100);
+    const missedHtml = m.missed.length
+      ? m.missed.map(q => `<div class="mc-gap"><span class="mc-concept">${q.concept}</span><span class="mc-exp">${q.exp.replace(/<[^>]+>/g,'')}</span></div>`).join('')
+      : `<div class="mc-none">All concepts demonstrated</div>`;
+    return `
+    <div class="mod-card">
+      <div class="mod-header">
+        <div class="mod-num">M${m.id}</div>
+        <div class="mod-info">
+          <div class="mod-title">${m.subtitle}</div>
+          <div class="mod-score-row">
+            <div class="mod-bar-wrap"><div class="mod-bar" style="width:${pct}%;background:${t.col}"></div></div>
+            <span class="mod-score">${m.score}/5</span>
+            <span class="mod-tier" style="color:${t.col}">${t.label}</span>
+          </div>
+        </div>
+      </div>
+      <div class="mod-gaps">${missedHtml}</div>
+    </div>`;
+  }).join('');
+
+  const certHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CCA Knowledge Profile — ${dateStr}</title>
+<style>
+  :root {
+    --bg: #0c0f14; --surface: #141820; --surface2: #1a1f2b;
+    --border: #252c3a; --border2: #2e3848; --text: #e2e8f0;
+    --muted: #64748b; --faint: #3a4255;
+    --accent: #00c896; --accent2: #22d3ee; --warn: #f59e0b;
+    --danger: #ef4444; --quiz-col: #a78bfa;
+    --mono: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); padding: 32px 24px 60px; max-width: 820px; margin: 0 auto; }
+  .cert-header { border: 1px solid var(--border2); border-radius: 12px; padding: 28px 32px; margin-bottom: 28px; position: relative; overflow: hidden; }
+  .cert-header::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background: linear-gradient(90deg, var(--quiz-col), var(--accent), var(--accent2)); }
+  .cert-badge { font-family: var(--mono); font-size: 10px; color: var(--quiz-col); text-transform: uppercase; letter-spacing: .15em; margin-bottom: 10px; }
+  .cert-title { font-size: 26px; font-weight: 700; margin-bottom: 4px; }
+  .cert-sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+  .cert-overall { display: inline-flex; align-items: center; gap: 14px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; padding: 12px 20px; }
+  .cert-score-big { font-family: var(--mono); font-size: 32px; font-weight: 700; }
+  .cert-score-label { font-size: 11px; color: var(--muted); }
+  .cert-tier-pill { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .1em; padding: 4px 12px; border-radius: 20px; background: rgba(255,255,255,.05); }
+  .section-label { font-family: var(--mono); font-size: 10px; color: var(--quiz-col); text-transform: uppercase; letter-spacing: .12em; margin: 28px 0 12px; }
+  .mod-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; margin-bottom: 10px; }
+  .mod-header { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; }
+  .mod-num { font-family: var(--mono); font-size: 11px; color: var(--faint); background: var(--surface2); border-radius: 4px; padding: 3px 7px; flex-shrink: 0; margin-top: 1px; }
+  .mod-info { flex: 1; }
+  .mod-title { font-size: 13px; font-weight: 600; margin-bottom: 7px; }
+  .mod-score-row { display: flex; align-items: center; gap: 10px; }
+  .mod-bar-wrap { flex: 1; height: 5px; background: var(--border2); border-radius: 3px; overflow: hidden; }
+  .mod-bar { height: 100%; border-radius: 3px; transition: width .4s; }
+  .mod-score { font-family: var(--mono); font-size: 11px; color: var(--muted); flex-shrink: 0; }
+  .mod-tier { font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .06em; flex-shrink: 0; }
+  .mod-gaps { padding-left: 36px; }
+  .mc-gap { margin-bottom: 6px; }
+  .mc-concept { font-family: var(--mono); font-size: 10px; color: var(--warn); display: block; margin-bottom: 2px; }
+  .mc-exp { font-size: 11px; color: var(--muted); line-height: 1.5; display: block; }
+  .mc-none { font-size: 11px; color: var(--accent); font-family: var(--mono); }
+  .prompt-section { background: var(--surface); border: 1px solid var(--border2); border-radius: 10px; overflow: hidden; margin-top: 28px; }
+  .prompt-header { padding: 12px 18px; background: var(--surface2); border-bottom: 1px solid var(--border2); display: flex; align-items: center; justify-content: space-between; }
+  .prompt-header-label { font-family: var(--mono); font-size: 10px; color: var(--quiz-col); text-transform: uppercase; letter-spacing: .12em; }
+  .prompt-header-desc { font-size: 11px; color: var(--muted); }
+  .copy-btn { background: rgba(167,139,250,.15); border: 1px solid rgba(167,139,250,.4); border-radius: 5px; color: var(--quiz-col); font-family: var(--mono); font-size: 11px; font-weight: 600; padding: 6px 14px; cursor: pointer; transition: all .15s; }
+  .copy-btn:hover { background: rgba(167,139,250,.3); }
+  .copy-btn.copied { background: rgba(0,200,150,.15); border-color: var(--accent); color: var(--accent); }
+  .save-btn { background: rgba(0,200,150,.08); border: 1px solid rgba(0,200,150,.3); border-radius: 5px; color: var(--accent); font-family: var(--mono); font-size: 11px; font-weight: 600; padding: 6px 14px; cursor: pointer; transition: all .15s; }
+  .save-btn:hover { background: rgba(0,200,150,.18); border-color: var(--accent); }
+  .btn-row { display: flex; gap: 8px; flex-shrink: 0; }
+  .prompt-body { padding: 18px; }
+  pre { font-family: var(--mono); font-size: 11.5px; color: #94a3b8; line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
+  .usage-note { margin-top: 28px; padding: 14px 18px; background: rgba(0,200,150,.05); border: 1px solid rgba(0,200,150,.2); border-radius: 8px; font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .usage-note strong { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="cert-header">
+  <div class="cert-badge">CCA Exam Prep · Knowledge Assessment Certificate</div>
+  <div class="cert-title">Claude Certified Architect</div>
+  <div class="cert-sub">Generated ${dateStr} · 16 episodes · 8 modules · 40 questions</div>
+  <div class="cert-overall">
+    <div>
+      <div class="cert-score-big" style="color:${overall.col}">${total}<span style="font-size:18px;color:var(--muted)">/${maxTotal}</span></div>
+      <div class="cert-score-label">Total Score</div>
+    </div>
+    <div class="cert-tier-pill" style="color:${overall.col};border:1px solid ${overall.col}40">${overall.label}</div>
+  </div>
+</div>
+
+<div class="section-label">Module Knowledge Strength</div>
+${moduleCardsHtml}
+
+<div class="prompt-section">
+  <div class="prompt-header">
+    <div>
+      <div class="prompt-header-label">📋 Claude Prompt — Paste into Claude.ai or Claude Desktop</div>
+      <div class="prompt-header-desc" style="margin-top:3px">Copy this prompt and paste it into a new Claude conversation to generate targeted lessons based on your profile.</div>
+    </div>
+    <button class="copy-btn" id="copy-btn" onclick="copyPrompt()">Copy Prompt</button>
+    <button class="save-btn" onclick="savePromptTxt()">Save .txt</button>
+  </div>
+  <div class="prompt-body">
+    <pre id="prompt-text">${prompt.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>
+  </div>
+</div>
+
+<div class="usage-note">
+  <strong>How to use:</strong><br>
+  <strong>claude.ai / Claude Desktop:</strong> Click "Copy Prompt" and paste into a new conversation.<br>
+  <strong>Claude Code CLI (PowerShell):</strong> Click "Save .txt" → place the file in your <code>cca-exam-prep/</code> folder → run <code>.\scripts\generate-lessons.ps1</code>. Outputs a Markdown study plan.<br>
+  Claude will parse your module scores, identify cross-module gap patterns, generate targeted lessons, and produce novel practice questions — all from this profile without any further context.
+</div>
+
+<script>
+function copyPrompt() {
+  const text = ${JSON.stringify(prompt)};
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy Prompt'; btn.classList.remove('copied'); }, 2500);
+  }).catch(() => {
+    document.getElementById('prompt-text').select?.();
+    alert('Select all text in the box above and copy manually.');
+  });
+}
+function savePromptTxt() {
+  const text = ${JSON.stringify(prompt)};
+  const date = new Date().toISOString().slice(0,10);
+  const blob = new Blob([text], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'cca-prompt-' + date + '.txt';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+</script>
+</body>
+</html>`;
+
+  const blob = new Blob([certHtml], { type: 'text/html' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `cca-knowledge-profile-${new Date().toISOString().slice(0,10)}.html`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ─── Settings modal ───────────────────────────────────────────────────── */
+function openSettings() {
+  document.getElementById('api-key-input').value = apiKey;
+  document.getElementById('settings-overlay').classList.add('show');
+}
+function closeSettings() {
+  document.getElementById('settings-overlay').classList.remove('show');
+}
+function saveApiKey() {
+  apiKey = document.getElementById('api-key-input').value.trim();
+  apiKey ? localStorage.setItem('cca-api-key', apiKey) : localStorage.removeItem('cca-api-key');
+  closeSettings();
+}
+document.getElementById('settings-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeSettings();
+});
+
+/* ─── Keyboard shortcuts ───────────────────────────────────────────────── */
+function toggleKbd() { document.getElementById('kbdhint').classList.toggle('show'); }
+
 document.addEventListener('keydown', e => {
   if (e.target.tagName === 'INPUT') return;
-  switch(e.key) {
-    case ' ':    e.preventDefault(); togglePlay(); break;
-    case 'ArrowLeft':  e.preventDefault(); skip(-5); break;
-    case 'ArrowRight': e.preventDefault(); skip(5); break;
-    case 'ArrowUp':    e.preventDefault(); prevEp(); break;
-    case 'ArrowDown':  e.preventDefault(); nextEp(); break;
-    case 'j': case 'J': skip(-15); break;
-    case 'l': case 'L': skip(30);  break;
+  switch (e.key) {
+    case ' ':          e.preventDefault(); togglePlay(); break;
+    case 'ArrowLeft':  e.preventDefault(); skip(-5);    break;
+    case 'ArrowRight': e.preventDefault(); skip(5);     break;
+    case 'ArrowUp':    e.preventDefault(); prevEp();    break;
+    case 'ArrowDown':  e.preventDefault(); nextEp();    break;
+    case 'j': case 'J': skip(-15);  break;
+    case 'l': case 'L': skip(30);   break;
     case 's': case 'S': cycleSpeed(); break;
-    case '?':  toggleKbd(); break;
+    case '?':           toggleKbd(); break;
   }
 });
 
-// Auto-load first on first visit
-if (!currentEp && Object.keys(played).length === 0) {
-  setTimeout(() => {}, 0); // stays on welcome screen until clicked
-}
+/* ─── Init ─────────────────────────────────────────────────────────────── */
+buildSidebar();
+document.getElementById('stat-played').textContent  = Object.keys(played).length;
+document.getElementById('stat-quizzes').textContent = Object.keys(quizState).length;
+refreshCertSidebar();
 </script>
 </body>
 </html>
